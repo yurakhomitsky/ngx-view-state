@@ -1,0 +1,256 @@
+import { AsyncPipe } from '@angular/common';
+import { Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Subject } from 'rxjs';
+
+import { EmptyStateComponent, ErrorStateComponent, LoadingStateComponent } from './components';
+import { ViewStatusEnum } from './enums/view-status.enum';
+import { emptyViewStatus, errorViewStatus, idleViewStatus, loadedViewStatus, loadingViewStatus } from './factories';
+import { ViewModel } from './models/view.model';
+import { ViewStatusModel } from './models/view-status.model';
+import { ViewStateDirective } from './view-state.directive';
+
+describe('ViewStateDirective', () => {
+  describe('viewStatus', () => {
+    @Component({
+      selector: 'app-test-host',
+      standalone: true,
+      template: `
+        <div *appViewState="viewStatus as viewStatusContext" class="static-content">Content static {{ viewStatusContext.type }}</div>
+        <div *appViewState="viewStatusSubject$ | async as viewStatusContext" class="async-content">
+          Content async pipe {{ viewStatusContext.type }}
+        </div>
+      `,
+      imports: [ViewStateDirective, AsyncPipe],
+    })
+    class TestViewStatusHostComponent {
+      public viewStatus: ViewStatusModel | null = null;
+      public viewStatusSubject$ = new Subject<ViewStatusModel>();
+
+      setViewStatus(status: ViewStatusModel): void {
+        this.viewStatus = status;
+        this.viewStatusSubject$.next(status);
+      }
+    }
+
+    let fixture: ComponentFixture<TestViewStatusHostComponent>;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [TestViewStatusHostComponent, NoopAnimationsModule],
+      });
+      fixture = TestBed.createComponent(TestViewStatusHostComponent);
+      fixture.detectChanges();
+    });
+
+    it('should not display the Content if viewStatus is null', () => {
+      fixture.componentInstance.viewStatus = null;
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('.static-content'))).toBeFalsy();
+      expect(fixture.debugElement.query(By.css('.async-content'))).toBeFalsy();
+    });
+
+    it('should not display the Content for [ERROR, LOADING, EMPTY]', () => {
+      fixture.componentInstance.setViewStatus(errorViewStatus());
+
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('.static-content'))).toBeFalsy();
+      expect(fixture.debugElement.query(By.css('.async-content'))).toBeFalsy();
+
+      fixture.componentInstance.setViewStatus(loadingViewStatus());
+
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('.static-content'))).toBeFalsy();
+      expect(fixture.debugElement.query(By.css('.async-content'))).toBeFalsy();
+
+      fixture.componentInstance.setViewStatus(emptyViewStatus());
+
+      fixture.detectChanges();
+    });
+
+    describe('Directive Context', () => {
+      it('should display value from the directive context', () => {
+        fixture.componentInstance.setViewStatus(loadedViewStatus());
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.query(By.css('.static-content')).nativeElement.textContent).toContain(
+          `Content static ${ViewStatusEnum.LOADED}`,
+        );
+        expect(fixture.debugElement.query(By.css('.async-content')).nativeElement.textContent).toContain(
+          `Content async pipe ${ViewStatusEnum.LOADED}`,
+        );
+      });
+    });
+
+    describe('Idle', () => {
+      beforeEach(() => {
+        fixture.componentInstance.setViewStatus(idleViewStatus());
+        fixture.detectChanges();
+      });
+
+      it('should display static content', () => {
+        expect(fixture.debugElement.query(By.css('.static-content'))).toBeTruthy();
+      });
+
+      it('should display async content', () => {
+        expect(fixture.debugElement.query(By.css('.async-content'))).toBeTruthy();
+      });
+    });
+
+    describe('Loading', () => {
+      it('should display the Loading State Component if viewStatus is null', () => {
+        fixture.componentInstance.viewStatus = null;
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.queryAll(By.directive(LoadingStateComponent)).length).toBe(2);
+      });
+
+      it('should Loading State Component', () => {
+        fixture.componentInstance.setViewStatus(loadingViewStatus());
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.queryAll(By.directive(LoadingStateComponent)).length).toBe(3);
+      });
+    });
+
+    describe('Loaded', () => {
+      beforeEach(() => {
+        fixture.componentInstance.setViewStatus(loadedViewStatus());
+        fixture.detectChanges();
+      });
+
+      it('should display static content', () => {
+        expect(fixture.debugElement.query(By.css('.static-content'))).toBeTruthy();
+      });
+
+      it('should display async content', () => {
+        expect(fixture.debugElement.query(By.css('.async-content'))).toBeTruthy();
+      });
+
+    });
+
+    describe('Empty', () => {
+      it('should display the Empty State Component', () => {
+        fixture.componentInstance.setViewStatus(emptyViewStatus('No Data'));
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.queryAll(By.directive(EmptyStateComponent)).length).toBe(3);
+        expect(fixture.debugElement.query(By.css('h2')).nativeElement.textContent).toContain('No Data');
+      });
+    });
+
+    describe('Error', () => {
+      it('should display the Error State Component', () => {
+        fixture.componentInstance.setViewStatus(errorViewStatus('Something went wrong'));
+
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.queryAll(By.directive(ErrorStateComponent)).length).toBe(3);
+        expect(fixture.debugElement.query(By.css('h2')).nativeElement.textContent).toContain('Something went wrong');
+      });
+    });
+  });
+
+  describe('viewModel', () => {
+    @Component({
+      selector: 'app-test-host',
+      standalone: true,
+      template: `
+        <div *appViewState="viewModel as viewModelContext" class="viewModel-content">View Model Content {{ viewModelContext.data }}</div>
+      `,
+      imports: [ViewStateDirective],
+    })
+    class TestViewModelHostComponent {
+      public viewModel: ViewModel<string> = {
+        viewStatus: loadedViewStatus(),
+        data: 'Hello World',
+      };
+    }
+
+    let fixture: ComponentFixture<TestViewModelHostComponent>;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [TestViewModelHostComponent, NoopAnimationsModule],
+      });
+      fixture = TestBed.createComponent(TestViewModelHostComponent);
+      fixture.detectChanges();
+    });
+
+    describe('Directive Context', () => {
+      it('should display data from directive context', () => {
+        fixture.componentInstance.viewModel = {
+          viewStatus: loadedViewStatus(),
+          data: 'Hello World',
+        };
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.query(By.css('.viewModel-content')).nativeElement.textContent).toContain(
+          'View Model Content Hello World',
+        );
+      });
+    });
+
+    describe('Idle', () => {
+      it('should display  content', () => {
+        fixture.componentInstance.viewModel = {
+          viewStatus: idleViewStatus(),
+          data: 'Hello World',
+        };
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.query(By.css('.viewModel-content'))).toBeTruthy();
+      });
+    });
+
+    describe('Loading', () => {
+      it('should Loading State Component', () => {
+        fixture.componentInstance.viewModel = {
+          viewStatus: loadingViewStatus(),
+        };
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.queryAll(By.directive(LoadingStateComponent)).length).toBe(1);
+      });
+    });
+
+    describe('Loaded', () => {
+      it('should display content', () => {
+        fixture.componentInstance.viewModel = {
+          viewStatus: loadedViewStatus(),
+          data: 'Hello World',
+        };
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.query(By.css('.viewModel-content'))).toBeTruthy();
+      });
+    });
+
+    describe('Empty', () => {
+      it('should display the Empty State Component', () => {
+        fixture.componentInstance.viewModel = {
+          viewStatus: emptyViewStatus(),
+        };
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.queryAll(By.directive(EmptyStateComponent)).length).toBe(1);
+      });
+    });
+
+    describe('Error', () => {
+      it('should display the Error State Component', () => {
+        fixture.componentInstance.viewModel = {
+          viewStatus: errorViewStatus(),
+        };
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.queryAll(By.directive(ErrorStateComponent)).length).toBe(1);
+      });
+    });
+  });
+});

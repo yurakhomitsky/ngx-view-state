@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Directive, Input, OnDestroy, TemplateRef, ViewContainerRef } from '@angular/core';
-import { EmptyStateComponent, ErrorStateComponent, LoadingStateComponent } from './components';
-import { ViewStatusEnum } from './enums/view-status.enum';
-import { ViewStatusModel } from './models/view-status.model';
+import { ErrorStateComponent, LoadingStateComponent } from './components';
+import { ViewStatusEnum } from './models/view-status.enum';
+import { ViewStatus } from './models/view-status.model';
 import { ViewContextValue, ViewStatusHandlers, ViewTypeConstraint } from './view-state.model';
 
 export interface ViewStateContext<T> {
@@ -40,8 +40,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
 
     this._viewState = value;
 
-
-    const viewStatus: ViewStatusModel =
+    const viewStatus: ViewStatus =
       'type' in value ? value : value.viewStatus;
 
     this.onViewStateChange({
@@ -65,7 +64,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     appViewState: undefined,
   };
 
-  private viewStatusHandlers: ViewStatusHandlers<ViewStatusModel, T> = {
+  private viewStatusHandlers: ViewStatusHandlers<ViewStatus, T> = {
     [ViewStatusEnum.IDLE]: () => {
       this.createContent();
     },
@@ -75,11 +74,8 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     [ViewStatusEnum.LOADED]: () => {
       this.createContent();
     },
-    [ViewStatusEnum.EMPTY]: ({ viewStatus }) => {
-      this.createEmptyState(viewStatus.emptyTextTitle);
-    },
     [ViewStatusEnum.ERROR]: ({ viewStatus }) => {
-      this.createErrorState(viewStatus.errorMessage);
+      this.createErrorState(viewStatus.error);
     },
   };
 
@@ -93,7 +89,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     this.viewContainerRef.clear();
   }
 
-  private onViewStateChange(viewModel: { viewStatus: ViewStatusModel; value: ViewContextValue<T> }): void {
+  private onViewStateChange(viewModel: { viewStatus: ViewStatus; value: ViewContextValue<T> }): void {
     this.viewContainerRef.clear();
     this.viewContext.$implicit = viewModel.value;
     this.viewContext.appViewState = viewModel.value;
@@ -114,23 +110,13 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     }
   }
 
-  private createErrorState(errorMessage?: string): void {
+  private createErrorState(error?: unknown): void {
     if (this.appViewStateError) {
       this.viewContainerRef.createEmbeddedView(this.appViewStateError, this.viewContext);
     } else {
       const component = this.viewContainerRef.createComponent(ErrorStateComponent);
 
-      component.setInput('errorMessage', errorMessage);
-    }
-  }
-
-  private createEmptyState(emptyTextTitle?: string): void {
-    if (this.appViewStateEmpty) {
-      this.viewContainerRef.createEmbeddedView(this.appViewStateEmpty, this.viewContext);
-    } else {
-      const component = this.viewContainerRef.createComponent(EmptyStateComponent);
-
-      component.setInput('emptyTextTitle', emptyTextTitle);
+      component.setInput('error', error);
     }
   }
 }

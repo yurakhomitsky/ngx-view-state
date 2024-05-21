@@ -1,12 +1,23 @@
 import { Observable, UnaryFunction, catchError, map, of, pipe, startWith } from 'rxjs';
-import { errorViewStatus, loadingViewStatus } from '../factories';
-import { ViewModel } from '../models/view.model';
+import { errorViewStatus, loadedViewStatus, loadingViewStatus } from '../factories';
+import { ComponentViewModel } from '../models/component-view-model.model';
 
 
-export function mapToViewModel<T>(): UnaryFunction<Observable<T | null> | never, Observable<ViewModel<T>>> {
+type ViewModelMapping<T, E> = {
+  onSuccess?: (data: T) => ComponentViewModel<T, E>;
+  onError?: (error: E) => ComponentViewModel<T, E>;
+}
+
+export function mapToViewModel<T, E>(params?: ViewModelMapping<T, E>): UnaryFunction<Observable<T>, Observable<ComponentViewModel<T, E>>> {
+  const { onSuccess, onError } = params || {};
+
   return pipe(
-    map(() => {}),
+    map((data: T) => {
+     return onSuccess ? onSuccess(data) : { data, viewStatus: loadedViewStatus(),  };
+    }),
     startWith({ viewStatus: loadingViewStatus() }),
-    catchError(() => of({ viewStatus: errorViewStatus() })),
+    catchError((err) => {
+      return of(onError ? onError(err) : { viewStatus: errorViewStatus(err) });
+    }),
   );
 }

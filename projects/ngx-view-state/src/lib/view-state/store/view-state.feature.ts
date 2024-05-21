@@ -1,44 +1,80 @@
-import { createEntityAdapter, EntityAdapter } from '@ngrx/entity';
-import { createFeature, createReducer, on } from '@ngrx/store';
+import { createEntityAdapter, Dictionary, EntityAdapter } from '@ngrx/entity';
+import {
+  Action,
+  createFeature,
+  createReducer,
+  createSelector,
+  DefaultProjectorFn,
+  MemoizedSelector,
+  on
+} from '@ngrx/store';
 
-import { emptyViewStatus, errorViewStatus, loadingViewStatus } from '../factories';
-import { ViewStatusModel } from '../models/view-status.model';
+import { errorViewStatus, idleViewStatus, loadingViewStatus } from '../factories';
+import { ViewStatus } from '../models/view-status.model';
 
 import { ViewStateActions } from './view-state.actions';
+import { ViewStatusEnum } from '../models/view-status.enum';
 
-export const viewStatesFeatureKey = 'viewStates';
-
-export interface ViewState {
-  id: string;
-  viewStatus: ViewStatusModel;
+interface ViewState<E> {
+  actionType: string;
+  viewStatus: ViewStatus<E>;
 }
 
-export const adapter: EntityAdapter<ViewState> = createEntityAdapter<ViewState>();
+export function createViewStateFeature<E>() {
+  const viewStatesFeatureKey = 'viewStates';
 
-export const initialState = adapter.getInitialState({});
+  const adapter: EntityAdapter<ViewState<E>> = createEntityAdapter<ViewState<E>>({
+    selectId: (viewState: ViewState<E>) => viewState.actionType,
+  });
 
-export const reducer = createReducer(
-  initialState,
-  on(ViewStateActions.startLoading, (state, { id }) => {
-    return adapter.upsertOne({ id, viewStatus: loadingViewStatus() }, state);
-  }),
-  on(ViewStateActions.empty, (state, { id, emptyMessage }) => {
-    return adapter.upsertOne({ id, viewStatus: emptyViewStatus(emptyMessage) }, state);
-  }),
-  on(ViewStateActions.error, (state, { id, errorMessage }) => {
-    return adapter.upsertOne({ id, viewStatus: errorViewStatus(errorMessage) }, state);
-  }),
-  on(ViewStateActions.reset, (state, { id }) => {
-    return adapter.removeOne(id, state);
-  }),
-);
+  const initialState = adapter.getInitialState({});
 
-export const viewStatesFeature = createFeature({
-  name: viewStatesFeatureKey,
-  reducer,
-  extraSelectors: ({ selectViewStatesState }) => ({
-    ...adapter.getSelectors(selectViewStatesState),
-  }),
-});
+  const reducer = createReducer(
+    initialState,
+    on(ViewStateActions.startLoading, (state, { actionType }) => {
+      return adapter.upsertOne({ actionType, viewStatus: loadingViewStatus() }, state);
+    }),
+    on(ViewStateActions.error, (state, { actionType, error }) => {
+      return adapter.upsertOne({ actionType, viewStatus: errorViewStatus<E>(error as E) }, state);
+    }),
+    on(ViewStateActions.reset, (state, { actionType }) => {
+      return adapter.removeOne(actionType, state);
+    }),
+  );
 
-export const { selectEntities } = viewStatesFeature;
+  const viewStatesFeature = createFeature({
+    name: viewStatesFeatureKey,
+    reducer,
+    extraSelectors: ({ selectViewStatesState, selectEntities }) => {
+      function selectLoadingActions(...actions: Action[]): MemoizedSelector<object, boolean, DefaultProjectorFn<boolean>> {
+        return createSelector(selectEntities, (actionStatuses: Dictionary<ViewState<E>>) => {
+          return actions.some((action: Action): boolean => actionStatuses[action.type]?.viewStatus.type === ViewStatusEnum.LOADING);
+        });
+      }
+
+      function selectActionStatus(action: Action): MemoizedSelector<object, ViewStatus<E>, DefaultProjectorFn<ViewStatus<E>>> {
+        return createSelector(selectEntities, (actionsMap: Dictionary<ViewState<E>>): ViewStatus<E> => {
+          return (actionsMap[action.type]?.viewStatus as ViewStatus<E>) ?? idleViewStatus() ;
+        });
+      }
+
+     return {
+       ...adapter.getSelectors(selectViewStatesState),
+       selectLoadingActions,
+       selectActionStatus
+     }
+    },
+  });
+
+  const { selectEntities, selectAll, selectIds, selectActionStatus, selectLoadingActions } = viewStatesFeature;
+
+  return {
+    viewStatesFeatureKey,
+    viewStatesFeature,
+    selectViewStateEntities: selectEntities,
+    selectViewStateIds: selectIds,
+    selectAllViewState: selectAll,
+    selectActionStatus,
+    selectLoadingActions
+  };
+}

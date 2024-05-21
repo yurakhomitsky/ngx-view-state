@@ -1,7 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 
-import { ActionsMapConfig, ViewStateActionsConfig } from './models';
+
+export type ActionsMapConfig = { viewState: 'startLoading'  } | { viewState: 'resetLoading', actionType: string } | { viewState: 'error', actionType: string };
+
+export interface ViewStateActionsConfig {
+  startLoadingOn: Action;
+  resetLoadingOn: Action[];
+  error: Action[];
+}
+
 
 @Injectable({
   providedIn: 'root',
@@ -21,8 +29,17 @@ export class ViewStateActionsService {
     return this.actionsMap.get(action.type)?.viewState === 'error';
   }
 
-  public getResetLoadingId(action: Action): string | null {
-    return this.actionsMap.get(action.type)?.resetLoadingId ?? null;
+  public getActionType(action: Action): string | null {
+    const actionConfig = this.actionsMap.get(action.type);
+    if (!actionConfig) {
+      return null;
+    }
+
+    if (actionConfig.viewState === 'startLoading') {
+      return null;
+    }
+
+    return actionConfig.actionType
   }
 
   public add(actions: ViewStateActionsConfig[]): void {
@@ -30,11 +47,11 @@ export class ViewStateActionsService {
       this.actionsMap.set(action.startLoadingOn.type, { viewState: 'startLoading' });
 
       action.resetLoadingOn.forEach((resetLoading: Action) => {
-        this.actionsMap.set(resetLoading.type, { viewState: 'resetLoading', resetLoadingId: action.startLoadingOn.type });
+        this.actionsMap.set(resetLoading.type, { viewState: 'resetLoading', actionType: action.startLoadingOn.type });
       });
 
       action.error.forEach((errorAction: Action) => {
-        this.actionsMap.set(errorAction.type, { viewState: 'error', resetLoadingId: action.startLoadingOn.type });
+        this.actionsMap.set(errorAction.type, { viewState: 'error', actionType: action.startLoadingOn.type });
       });
     });
   }

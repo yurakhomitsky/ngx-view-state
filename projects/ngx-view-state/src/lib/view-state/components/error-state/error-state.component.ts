@@ -1,12 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-error-state',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [],
   template: `
-    <mat-icon class="error-state-icon" svgIcon="error"></mat-icon>
     <h2>{{ errorMessage || 'There is an error displaying this data' }}</h2>
   `,
   styles: [
@@ -19,11 +17,6 @@ import { MatIconModule } from '@angular/material/icon';
         flex-direction: column;
         justify-content: center;
         align-items: center;
-      }
-
-      .error-state-icon {
-        height: 4rem;
-        width: 4rem;
       }
     `,
   ],

@@ -3,7 +3,7 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { ReplaySubject } from 'rxjs';
 
-import { ViewStateErrorProps, ViewStateSuccessProps } from '../models/view-state-props';
+import { ViewStateErrorProps } from '../models/view-state-props.model';
 import { ViewStateActionsService } from '../services/view-state-actions.service';
 
 import { ViewStateActions } from './view-state.actions';
@@ -17,7 +17,7 @@ describe('ViewStateEffects', () => {
     'isStartLoadingAction',
     'isErrorAction',
     'isResetLoadingAction',
-    'getResetLoadingId',
+    'getActionType',
   ]);
 
   beforeEach(() => {
@@ -43,7 +43,7 @@ describe('ViewStateEffects', () => {
       const loadData: Action = { type: 'loadData' };
 
       effects.startLoading$.subscribe((action) => {
-        expect(action).toEqual(ViewStateActions.startLoading({ id: loadData.type }));
+        expect(action).toEqual(ViewStateActions.startLoading({ actionType: loadData.type }));
         done();
       });
 
@@ -72,30 +72,12 @@ describe('ViewStateEffects', () => {
       const loadDataSuccess: Action = { type: 'loadDataSuccess' };
 
       effects.reset$.subscribe((action) => {
-        expect(action).toEqual(ViewStateActions.reset({ id: 'loadData' }));
+        expect(action).toEqual(ViewStateActions.reset({ actionType: 'loadData' }));
         done();
       });
 
       viewStateActionsServiceSpy.isResetLoadingAction.and.returnValue(true);
-      viewStateActionsServiceSpy.getResetLoadingId.and.returnValue('loadData');
-
-      actions$.next(loadDataSuccess);
-    });
-
-    it('should map to empty action', (done) => {
-      const loadDataSuccess: Action & ViewStateSuccessProps = {
-        type: 'loadDataSuccess',
-        isDataEmpty: true,
-        emptyText: 'custom empty text',
-      };
-
-      effects.reset$.subscribe((action) => {
-        expect(action).toEqual(ViewStateActions.empty({ id: 'loadData', emptyMessage: loadDataSuccess.emptyText ?? '' }));
-        done();
-      });
-
-      viewStateActionsServiceSpy.isResetLoadingAction.and.returnValue(true);
-      viewStateActionsServiceSpy.getResetLoadingId.and.returnValue('loadData');
+      viewStateActionsServiceSpy.getActionType.and.returnValue('loadData');
 
       actions$.next(loadDataSuccess);
     });
@@ -116,15 +98,15 @@ describe('ViewStateEffects', () => {
 
   describe('error$', () => {
     it('should map to error action', (done) => {
-      const loadDataFailure: Action & ViewStateErrorProps = { type: 'loadDataFailure', errorMessage: 'custom error message' };
+      const loadDataFailure: Action & ViewStateErrorProps<string> = { type: 'loadDataFailure', error: 'custom error message' };
 
       effects.error$.subscribe((action) => {
-        expect(action).toEqual(ViewStateActions.error({ id: 'loadData', errorMessage: loadDataFailure.errorMessage ?? '' }));
+        expect(action).toEqual(ViewStateActions.error({ actionType: 'loadData', error: loadDataFailure.error ?? '' }));
         done();
       });
 
       viewStateActionsServiceSpy.isErrorAction.and.returnValue(true);
-      viewStateActionsServiceSpy.getResetLoadingId.and.returnValue('loadData');
+      viewStateActionsServiceSpy.getActionType.and.returnValue('loadData');
 
       actions$.next(loadDataFailure);
     });

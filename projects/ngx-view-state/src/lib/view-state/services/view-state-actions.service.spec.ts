@@ -1,8 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Action } from '@ngrx/store';
 
-import { ViewStateActionsConfig } from './models';
-import { ViewStateActionsService } from './view-state-actions.service';
+import { ViewStateActionsConfig, ViewStateActionsService } from './view-state-actions.service';
 
 describe('ViewStateActionsService', () => {
   let service: ViewStateActionsService;
@@ -76,15 +75,15 @@ describe('ViewStateActionsService', () => {
 
   describe('getResetLoadingId', () => {
     it('should return null', () => {
-      expect(service.getResetLoadingId({ type: 'some action' })).toBe(null);
+      expect(service.getActionType({ type: 'some action' })).toBe(null);
     });
 
     it('should get correct resetLoadingId for loadDataSuccess', () => {
-      expect(service.getResetLoadingId(loadDataSuccess)).toBe(loadData.type);
+      expect(service.getActionType(loadDataSuccess)).toBe(loadData.type);
     });
 
     it('should get correct resetLoadingId for lodDataFailure', () => {
-      expect(service.getResetLoadingId(lodDataFailure)).toBe(loadData.type);
+      expect(service.getActionType(lodDataFailure)).toBe(loadData.type);
     });
   });
 });

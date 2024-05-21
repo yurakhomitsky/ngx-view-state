@@ -5,7 +5,7 @@ import { Action, createActionGroup, emptyProps, props, Store, StoreModule } from
 import { catchError, of, switchMap, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ViewStateErrorProps, ViewStateSuccessProps } from '../models/view-state-props';
+import { ViewStateErrorProps } from '../models/view-state-props.model';
 import { ViewStateActionsService } from '../services/view-state-actions.service';
 
 import { ViewStateActions } from './view-state.actions';
@@ -24,7 +24,7 @@ describe('ViewStateIntegration', () => {
     source: 'Data',
     events: {
       loadData: emptyProps(),
-      loadDataSuccess: props<{ data: string[] } & ViewStateSuccessProps>(),
+      loadDataSuccess: props<{ data: string[] }>(),
       loadDataFailure: props<ViewStateErrorProps>(),
     },
   });
@@ -55,8 +55,6 @@ describe('ViewStateIntegration', () => {
               map((data: string[]) => {
                 return DataActions.loadDataSuccess({
                   data,
-                  isDataEmpty: !data.length,
-                  emptyText: !data.length ? 'Data is empty' : undefined,
                 });
               }),
               catchError(() => {
@@ -87,9 +85,9 @@ describe('ViewStateIntegration', () => {
   it('should handle success data loading correctly', (done) => {
     const dataExpected: Action[] = [
       DataActions.loadData(),
-      ViewStateActions.startLoading({ id: DataActions.loadData.type }),
-      DataActions.loadDataSuccess({ data: ['Hello', 'Word'], isDataEmpty: false, emptyText: undefined }),
-      ViewStateActions.reset({ id: DataActions.loadData.type }),
+      ViewStateActions.startLoading({ actionType: DataActions.loadData.type }),
+      DataActions.loadDataSuccess({ data: ['Hello', 'Word'] }),
+      ViewStateActions.reset({ actionType: DataActions.loadData.type }),
     ];
 
     const result: Action[] = [];
@@ -111,9 +109,9 @@ describe('ViewStateIntegration', () => {
   it('should handle failure data loading correctly', (done) => {
     const dataExpected: Action[] = [
       DataActions.loadData(),
-      ViewStateActions.startLoading({ id: DataActions.loadData.type }),
+      ViewStateActions.startLoading({ actionType: DataActions.loadData.type }),
       DataActions.loadDataFailure({}),
-      ViewStateActions.error({ id: DataActions.loadData.type, errorMessage: undefined }),
+      ViewStateActions.error({ actionType: DataActions.loadData.type, error: undefined }),
     ];
 
     const result: Action[] = [];
@@ -128,30 +126,6 @@ describe('ViewStateIntegration', () => {
     });
 
     spyOn(apiService, 'getData').and.returnValue(throwError(() => new Error('Oops')));
-
-    store.dispatch(DataActions.loadData());
-  });
-
-  it('should handle empty data loading correctly', (done) => {
-    const dataExpected: Action[] = [
-      DataActions.loadData(),
-      ViewStateActions.startLoading({ id: DataActions.loadData.type }),
-      DataActions.loadDataSuccess({ data: [], isDataEmpty: true, emptyText: 'Data is empty' }),
-      ViewStateActions.empty({ id: DataActions.loadData.type, emptyMessage: 'Data is empty' }),
-    ];
-
-    const result: Action[] = [];
-
-    actions$.subscribe((action) => {
-      result.push(action);
-
-      if (result.length === dataExpected.length) {
-        expect(dataExpected).toEqual(result);
-        done();
-      }
-    });
-
-    spyOn(apiService, 'getData').and.returnValue(of([]));
 
     store.dispatch(DataActions.loadData());
   });

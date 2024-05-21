@@ -5,12 +5,12 @@ import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Subject } from 'rxjs';
 
-import { EmptyStateComponent, ErrorStateComponent, LoadingStateComponent } from './components';
-import { ViewStatusEnum } from './enums/view-status.enum';
-import { emptyViewStatus, errorViewStatus, idleViewStatus, loadedViewStatus, loadingViewStatus } from './factories';
-import { ViewModel } from './models/view.model';
-import { ViewStatusModel } from './models/view-status.model';
+import { ErrorStateComponent, LoadingStateComponent } from './components';
+import { ViewStatusEnum } from './models/view-status.enum';
+import {  errorViewStatus, idleViewStatus, loadedViewStatus, loadingViewStatus } from './factories';
+import { ViewStatus } from './models/view-status.model';
 import { ViewStateDirective } from './view-state.directive';
+import { ComponentViewModel } from './models/component-view-model.model';
 
 describe('ViewStateDirective', () => {
   describe('viewStatus', () => {
@@ -26,10 +26,10 @@ describe('ViewStateDirective', () => {
       imports: [ViewStateDirective, AsyncPipe],
     })
     class TestViewStatusHostComponent {
-      public viewStatus: ViewStatusModel | null = null;
-      public viewStatusSubject$ = new Subject<ViewStatusModel>();
+      public viewStatus: ViewStatus | null = null;
+      public viewStatusSubject$ = new Subject<ViewStatus>();
 
-      setViewStatus(status: ViewStatusModel): void {
+      setViewStatus(status: ViewStatus): void {
         this.viewStatus = status;
         this.viewStatusSubject$.next(status);
       }
@@ -68,9 +68,6 @@ describe('ViewStateDirective', () => {
       expect(fixture.debugElement.query(By.css('.static-content'))).toBeFalsy();
       expect(fixture.debugElement.query(By.css('.async-content'))).toBeFalsy();
 
-      fixture.componentInstance.setViewStatus(emptyViewStatus());
-
-      fixture.detectChanges();
     });
 
     describe('Directive Context', () => {
@@ -134,16 +131,6 @@ describe('ViewStateDirective', () => {
 
     });
 
-    describe('Empty', () => {
-      it('should display the Empty State Component', () => {
-        fixture.componentInstance.setViewStatus(emptyViewStatus('No Data'));
-        fixture.detectChanges();
-
-        expect(fixture.debugElement.queryAll(By.directive(EmptyStateComponent)).length).toBe(3);
-        expect(fixture.debugElement.query(By.css('h2')).nativeElement.textContent).toContain('No Data');
-      });
-    });
-
     describe('Error', () => {
       it('should display the Error State Component', () => {
         fixture.componentInstance.setViewStatus(errorViewStatus('Something went wrong'));
@@ -166,7 +153,7 @@ describe('ViewStateDirective', () => {
       imports: [ViewStateDirective],
     })
     class TestViewModelHostComponent {
-      public viewModel: ViewModel<string> = {
+      public viewModel: ComponentViewModel<string> = {
         viewStatus: loadedViewStatus(),
         data: 'Hello World',
       };
@@ -228,17 +215,6 @@ describe('ViewStateDirective', () => {
         fixture.detectChanges();
 
         expect(fixture.debugElement.query(By.css('.viewModel-content'))).toBeTruthy();
-      });
-    });
-
-    describe('Empty', () => {
-      it('should display the Empty State Component', () => {
-        fixture.componentInstance.viewModel = {
-          viewStatus: emptyViewStatus(),
-        };
-        fixture.detectChanges();
-
-        expect(fixture.debugElement.queryAll(By.directive(EmptyStateComponent)).length).toBe(1);
       });
     });
 

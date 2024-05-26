@@ -15,7 +15,7 @@ describe('ViewStateSelectors', () => {
 
       const stateDictionary: Dictionary<ViewState> = {
         [action.type]: {
-          id: action.type,
+          actionType: action.type,
           viewStatus: loadingViewStatus(),
         },
       };
@@ -50,7 +50,7 @@ describe('ViewStateSelectors', () => {
 
       const stateDictionary: Dictionary<ViewState> = {
         [getAdditionalDataAction.type]: {
-          id: getAdditionalDataAction.type,
+          actionType: getAdditionalDataAction.type,
           viewStatus: loadingViewStatus(),
         },
       };

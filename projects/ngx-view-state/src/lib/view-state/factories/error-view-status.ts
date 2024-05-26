@@ -1,9 +1,9 @@
-import { ViewStatusEnum } from '../enums/view-status.enum';
+import { ViewStatusEnum } from '../models/view-status.enum';
 import { ViewError } from '../models/view-status.model';
 
-export function errorViewStatus(errorMessage?: string): ViewError {
+export function errorViewStatus<E>(error?: E): ViewError<E> {
   return {
     type: ViewStatusEnum.ERROR,
-    errorMessage,
+    error,
   };
 }

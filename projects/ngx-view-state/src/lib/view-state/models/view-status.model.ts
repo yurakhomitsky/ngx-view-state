@@ -1,4 +1,4 @@
-import { ViewStatusEnum } from '../enums/view-status.enum';
+import { ViewStatusEnum } from './view-status.enum';
 
 export interface ViewIdle {
   readonly type: ViewStatusEnum.IDLE;
@@ -12,16 +12,9 @@ export interface ViewLoaded {
   readonly type: ViewStatusEnum.LOADED;
 }
 
-export interface ViewEmpty {
-  readonly type: ViewStatusEnum.EMPTY;
-
-  readonly emptyTextTitle?: string;
-}
-
-export interface ViewError {
+export interface ViewError<E = unknown> {
   readonly type: ViewStatusEnum.ERROR;
-
-  readonly errorMessage?: string;
+  readonly error?: E;
 }
 
-export type ViewStatusModel = ViewIdle | ViewLoading | ViewLoaded | ViewEmpty | ViewError;
+export type ViewStatus<E = unknown> = ViewIdle | ViewLoading | ViewLoaded | ViewError<E>;

@@ -1,11 +1,11 @@
-import { ViewStatusEnum } from './enums/view-status.enum';
-import { ViewModel } from './models/view.model';
-import { ViewLoaded, ViewStatusModel } from './models/view-status.model';
+import { ViewStatusEnum } from './models/view-status.enum';
+import { ViewLoaded, ViewStatus } from './models/view-status.model';
+import { ComponentViewModel } from './models/component-view-model.model';
 
 /**
  * To constrain the generic T type in the directive
  */
-export type ViewTypeConstraint<T> = ViewStatusModel | ViewModel<T>;
+export type ViewTypeConstraint<T> = ViewStatus | ComponentViewModel<T>;
 
 /**
  * Type for defining handlers associated with a particular ViewStatusEnum.
@@ -14,4 +14,4 @@ export type ViewStatusHandlers<ViewStatuses extends { type: ViewStatusEnum }, T>
   [ViewStatus in ViewStatuses as ViewStatus['type']]: (event: { viewStatus: ViewStatus; value: T }) => void;
 };
 
-export type ViewContextValue<T> = T extends ViewStatusModel ? ViewLoaded : T;
+export type ViewContextValue<T> = T extends ViewStatus ? ViewLoaded : T;

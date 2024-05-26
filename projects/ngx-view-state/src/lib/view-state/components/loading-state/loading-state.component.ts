@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-loading-state',
   standalone: true,
-  imports: [MatProgressSpinnerModule],
-  template: ' <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner> ',
+  imports: [],
+  template: '<p>Loading...</p> ',
   styles: [
     `
       :host {

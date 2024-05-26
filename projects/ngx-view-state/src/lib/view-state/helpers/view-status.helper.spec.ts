@@ -1,18 +1,20 @@
-import { errorViewStatus, isViewStatusLoaded, loadedViewStatus, loadingViewStatus } from '@shared/view-state';
 
-import { ViewError, ViewLoaded, ViewLoading } from '../models/view-status.model';
+import { ViewError, ViewIdle, ViewLoaded, ViewLoading } from '../models/view-status.model';
 
-import { isViewStatusLoading, isViewStatusError } from './view-status.helper';
+import { isViewStatusLoading, isViewStatusError, isViewStatusIdle, isViewStatusLoaded } from './view-status.helper';
+import { errorViewStatus, idleViewStatus, loadedViewStatus, loadingViewStatus } from '../factories';
 
 describe('ViewStatusHelpers', () => {
   let viewStatusLoading: ViewLoading;
   let viewStatusError: ViewError;
   let viewStatusLoaded: ViewLoaded;
+  let viewStatusIdle: ViewIdle;
 
   beforeEach(() => {
     viewStatusLoading = loadingViewStatus();
     viewStatusError = errorViewStatus();
     viewStatusLoaded = loadedViewStatus();
+    viewStatusIdle = idleViewStatus();
   });
 
   describe('isViewStatusLoading', () => {
@@ -42,6 +44,16 @@ describe('ViewStatusHelpers', () => {
 
     it('should return false when viewStatus is not loaded', () => {
       expect(isViewStatusLoaded(viewStatusLoading)).toBe(false);
+    });
+  });
+
+  describe('isViewStatusIdle', () => {
+    it('should return true when viewStatus is idle', () => {
+      expect(isViewStatusIdle(viewStatusIdle)).toBe(true);
+    });
+
+    it('should return false when viewStatus is not idle', () => {
+      expect(isViewStatusIdle(viewStatusLoading)).toBe(false);
     });
   });
 });

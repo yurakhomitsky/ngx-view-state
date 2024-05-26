@@ -3,7 +3,7 @@ import { Actions, createEffect } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
 import { filter, map } from 'rxjs/operators';
 
-import { ViewStateErrorProps, ViewStateSuccessProps } from '../models/view-state-props';
+import { ViewStateErrorProps } from '../models/view-state-props.model';
 import { ViewStateActionsService } from '../services/view-state-actions.service';
 
 import { ViewStateActions } from './view-state.actions';
@@ -26,7 +26,7 @@ export class ViewStateEffects {
           return this.viewStateActionsService.isStartLoadingAction(action);
         }),
         map((action: Action) => {
-          return ViewStateActions.startLoading({ id: action.type });
+          return ViewStateActions.startLoading({ actionType: action.type });
         }),
       );
     });
@@ -38,9 +38,8 @@ export class ViewStateEffects {
         filter((action: Action) => {
           return this.viewStateActionsService.isResetLoadingAction(action);
         }),
-        map((action: Action & ViewStateSuccessProps) => {
-          const id = this.viewStateActionsService.getResetLoadingId(action) ?? '';
-          return action.isDataEmpty ? ViewStateActions.empty({ id, emptyMessage: action.emptyText }) : ViewStateActions.reset({ id });
+        map((action: Action ) => {
+          return ViewStateActions.reset({ actionType: this.viewStateActionsService.getActionType(action) ?? '' });
         }),
       );
     });
@@ -54,8 +53,8 @@ export class ViewStateEffects {
         }),
         map((action: Action & ViewStateErrorProps) => {
           return ViewStateActions.error({
-            id: this.viewStateActionsService.getResetLoadingId(action) ?? '',
-            errorMessage: action.errorMessage,
+            actionType: this.viewStateActionsService.getActionType(action) ?? '',
+            error: action.error,
           });
         }),
       );

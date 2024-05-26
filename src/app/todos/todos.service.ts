@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { CreateTodo, Todo } from './todo.model';
+import { delay, Observable } from 'rxjs';
+import { CreateTodo, Todo } from './models/todo.model';
 
 @Injectable({ providedIn: 'root' })
 export class TodosService {
@@ -10,7 +10,9 @@ export class TodosService {
 	constructor(private http: HttpClient) { }
 
 	public getTodos(): Observable<Todo[]> {
-		return this.http.get<Todo[]>(this.apiUrl);
+		return this.http.get<Todo[]>(this.apiUrl).pipe(
+			delay(500)
+		)
 	}
 
 	public addTodo(todo: CreateTodo): Observable<Todo> {

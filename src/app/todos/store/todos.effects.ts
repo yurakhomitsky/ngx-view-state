@@ -34,58 +34,59 @@ export class TodosEffects {
 				startLoadingOn: TodosActions.deleteTodo,
 				resetLoadingOn: [TodosActions.deleteTodoSuccess],
 				error: [TodosActions.deleteTodoFailure]
-			},
-		])
+			}
+		]);
 	}
 
 	private getTodos() {
 		return createEffect(() => this.actions$.pipe(
 			ofType(TodosActions.loadTodos),
 			switchMap(() => this.todosService.getTodos().pipe(
-				map(todos => TodosActions.loadTodosSuccess({ todos })),
-				catchError(error => of(TodosActions.loadTodosFailure({ error })))
-			)
-		)));
+					map(todos => TodosActions.loadTodosSuccess({ todos })),
+					catchError(() => of(TodosActions.loadTodosFailure({ viewStateError: 'Could not load todos' })))
+				)
+			)));
 	}
+
 	private addTodo() {
 		return createEffect(() => this.actions$.pipe(
 			ofType(TodosActions.addTodo),
 			concatMap(({ todo }) => this.todosService.addTodo(todo).pipe(
-				map(todo => {
-					return TodosActions.addTodoSuccess({ todo });
-				}),
-				catchError(error => {
-					return of(TodosActions.addTodoFailure({ error }));
-				})
-			)
-		)));
+					map(todo => {
+						return TodosActions.addTodoSuccess({ todo });
+					}),
+					catchError(() => {
+						return of(TodosActions.addTodoFailure({ viewStateError: 'Could not add todo' }));
+					})
+				)
+			)));
 	}
 
 	private updateTodo() {
 		return createEffect(() => this.actions$.pipe(
 			ofType(TodosActions.updateTodo),
 			concatMap(({ todo }) => this.todosService.updateTodo(todo).pipe(
-				map(todo => {
-					return TodosActions.updateTodoSuccess({ todo });
-				}),
-				catchError(error => {
-					return of(TodosActions.updateTodoFailure({ error }));
-				})
-			)
-		)));
+					map(todo => {
+						return TodosActions.updateTodoSuccess({ todo });
+					}),
+					catchError(() => {
+						return of(TodosActions.updateTodoFailure({ viewStateError: 'Could not update todo' }));
+					})
+				)
+			)));
 	}
 
 	private deleteTodo() {
 		return createEffect(() => this.actions$.pipe(
 			ofType(TodosActions.deleteTodo),
 			concatMap(({ id }) => this.todosService.deleteTodo(id).pipe(
-				map(() => {
-					return TodosActions.deleteTodoSuccess({ id });
-				}),
-				catchError(error => {
-					return of(TodosActions.deleteTodoFailure({ error }));
-				})
-			)
-		)));
+					map(() => {
+						return TodosActions.deleteTodoSuccess({ id });
+					}),
+					catchError(() => {
+						return of(TodosActions.deleteTodoFailure({ viewStateError: 'Could not delete todo' }));
+					})
+				)
+			)));
 	}
 }

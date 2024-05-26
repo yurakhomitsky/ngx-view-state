@@ -1,0 +1,29 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100dvh;
+    margin: 0 auto;
+}
+
+.toolbar {
+    flex: 0 0 4rem;
+}
+
+.content {
+    flex: 1;
+    margin: 0 auto;
+    max-height: 90%;
+}
+
+@media (min-width: 768px) {
+    .content {
+        width: 70%;
+    }
+}
+
+@media (max-width: 768px) {
+    .content {
+        width: 100%;
+    }
+}

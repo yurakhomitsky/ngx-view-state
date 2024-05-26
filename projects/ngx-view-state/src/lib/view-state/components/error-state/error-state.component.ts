@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ViewStateErrorComponent } from '../../models/view-state-component.model';
 
 @Component({
   selector: 'app-error-state',
   standalone: true,
   imports: [],
   template: `
-    <h2>{{ errorMessage || 'There is an error displaying this data' }}</h2>
+    <h2>{{ viewStateError || 'There is an error displaying this data' }}</h2>
   `,
   styles: [
     `
@@ -22,6 +23,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ErrorStateComponent {
-  @Input() public errorMessage?: string;
+export class ErrorStateComponent implements ViewStateErrorComponent<string> {
+  @Input() public viewStateError!: string;
 }

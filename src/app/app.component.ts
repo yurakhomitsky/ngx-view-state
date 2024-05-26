@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { TodosComponent } from './todos/todos.component';
+import { MatToolbar } from '@angular/material/toolbar';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [TodosComponent, MatToolbar],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

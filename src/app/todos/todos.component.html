@@ -1,0 +1,48 @@
+<mat-card class="card">
+	<ng-container *appViewState="viewStatus$ | async">
+		<table *ngIf="todos$ | async as todos" mat-table [dataSource]="todos" class="mat-elevation-z8 table">
+			<mat-text-column name="id"></mat-text-column>
+
+			<mat-text-column name="title"></mat-text-column>
+
+			<ng-container matColumnDef="completed">
+				<th mat-header-cell *matHeaderCellDef> Completed </th>
+				<td mat-cell *matCellDef="let element">
+					<mat-checkbox [checked]="element.completed" (change)="onCompleteChange($event, element)"></mat-checkbox>
+				</td>
+			</ng-container>
+
+			<ng-container matColumnDef="delete">
+				<th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+				<td mat-cell *matCellDef="let element">
+					<button mat-raised-button color="warn" (click)="deleteTodo(element)">
+						Delete
+					</button>
+				</td>
+			</ng-container>
+
+			<tr mat-header-row  *matHeaderRowDef="displayedColumns"></tr>
+			<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+		</table>
+	</ng-container>
+	<div class="loading-shade" *ngIf="isOverlayLoading$ | async">
+		<app-loading></app-loading>
+	</div>
+</mat-card>
+
+<mat-card>
+	<mat-card-header>
+		<mat-card-title>Add Todo</mat-card-title>
+	</mat-card-header>
+	<mat-card-content>
+		<mat-form-field>
+			<input matInput placeholder="Title" [(ngModel)]="title">
+		</mat-form-field>
+		<button mat-raised-button color="primary" (click)="addTodo()">Add</button>
+		<div class="actions-group">
+			<button mat-raised-button color="accent" (click)="setLoading()">Set Loading Status</button>
+			<button mat-raised-button color="accent" (click)="setError()">Set Error Status</button>
+			<button mat-raised-button color="accent" (click)="reset()">Reset</button>
+		</div>
+	</mat-card-content>
+</mat-card>

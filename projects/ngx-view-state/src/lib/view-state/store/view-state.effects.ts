@@ -51,10 +51,10 @@ export class ViewStateEffects {
         filter((action: Action) => {
           return this.viewStateActionsService.isErrorAction(action);
         }),
-        map((action: Action & ViewStateErrorProps) => {
+        map((action: Action) => {
           return ViewStateActions.error({
             actionType: this.viewStateActionsService.getActionType(action) ?? '',
-            error: action.error,
+            error: (action as Action & ViewStateErrorProps)?.viewStateError ?? undefined
           });
         }),
       );

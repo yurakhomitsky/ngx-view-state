@@ -1,8 +1,18 @@
-import { ChangeDetectorRef, Directive, Input, OnDestroy, TemplateRef, ViewContainerRef } from '@angular/core';
-import { ErrorStateComponent, LoadingStateComponent } from './components';
+import {
+  ChangeDetectorRef,
+  Directive,
+  Inject,
+  Input,
+  OnDestroy,
+  TemplateRef,
+  Type,
+  ViewContainerRef
+} from '@angular/core';
 import { ViewStatusEnum } from './models/view-status.enum';
 import { ViewStatus } from './models/view-status.model';
 import { ViewContextValue, ViewStatusHandlers, ViewTypeConstraint } from './view-state.model';
+import { ERROR_STATE_COMPONENT, LOADING_STATE_COMPONENT } from './tokens/default-state-components.token';
+import { ViewStateErrorComponent, ViewStateLoadingComponent } from './models/view-state-component.model';
 
 export interface ViewStateContext<T> {
   /**
@@ -83,6 +93,10 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     private viewContainerRef: ViewContainerRef,
     private templateRef: TemplateRef<ViewStateContext<T>>,
     private cdRef: ChangeDetectorRef,
+    @Inject(ERROR_STATE_COMPONENT)
+    private errorStateComponent: Type<ViewStateErrorComponent<unknown>>,
+    @Inject(LOADING_STATE_COMPONENT)
+    private loadingStateComponent: Type<ViewStateLoadingComponent>,
   ) {}
 
   public ngOnDestroy(): void {
@@ -106,7 +120,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     if (this.appViewStateLoading) {
       this.viewContainerRef.createEmbeddedView(this.appViewStateLoading, this.viewContext);
     } else {
-      this.viewContainerRef.createComponent(LoadingStateComponent);
+      this.viewContainerRef.createComponent(this.loadingStateComponent);
     }
   }
 
@@ -114,9 +128,8 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     if (this.appViewStateError) {
       this.viewContainerRef.createEmbeddedView(this.appViewStateError, this.viewContext);
     } else {
-      const component = this.viewContainerRef.createComponent(ErrorStateComponent);
-
-      component.setInput('error', error);
+      const component = this.viewContainerRef.createComponent(this.errorStateComponent);
+      component.setInput('viewStateError', error);
     }
   }
 }

@@ -43,6 +43,7 @@ export class ViewStateActionsService {
   }
 
   public add(actions: ViewStateActionsConfig[]): void {
+    console.log(actions)
     actions.forEach((action: ViewStateActionsConfig) => {
       this.actionsMap.set(action.startLoadingOn.type, { viewState: 'startLoading' });
 

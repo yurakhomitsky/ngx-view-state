@@ -6,11 +6,14 @@ import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient } from '@angular/common/http';
 import { viewStatesFeature } from './store/view-state.feature';
-import { ViewStateEffects } from '../../projects/ngx-view-state/src/lib/view-state';
+import { ViewStateEffects, provideLoadingStateComponent, provideErrorStateComponent } from 'ngx-view-state';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { todosFeature } from './todos/store/todos.feature';
+import { TodosEffects } from './todos/store/todos.effects';
+import { LoadingComponent } from './todos/components/loading/loading.component';
+import { ErrorComponent } from './todos/components/error/error.component';
 
 export const routes: Routes = [];
-
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -18,7 +21,10 @@ export const appConfig: ApplicationConfig = {
 		provideHttpClient(),
 		provideStore({}),
 		provideState(viewStatesFeature),
-		provideEffects(ViewStateEffects),
-		provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }), provideAnimationsAsync()
+		provideState(todosFeature),
+		provideEffects(ViewStateEffects, TodosEffects),
+		provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }), provideAnimationsAsync(),
+		provideLoadingStateComponent(LoadingComponent),
+		provideErrorStateComponent(ErrorComponent)
 	]
 };

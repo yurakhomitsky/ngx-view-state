@@ -3,5 +3,4 @@ export enum ViewStatusEnum {
   LOADING = 'loading',
   LOADED = 'loaded',
   ERROR = 'error',
-  EMPTY = 'empty',
 }

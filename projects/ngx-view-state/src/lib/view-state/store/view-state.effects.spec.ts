@@ -98,10 +98,10 @@ describe('ViewStateEffects', () => {
 
   describe('error$', () => {
     it('should map to error action', (done) => {
-      const loadDataFailure: Action & ViewStateErrorProps<string> = { type: 'loadDataFailure', error: 'custom error message' };
+      const loadDataFailure: Action & ViewStateErrorProps<string> = { type: 'loadDataFailure', viewStateError: 'custom error message' };
 
       effects.error$.subscribe((action) => {
-        expect(action).toEqual(ViewStateActions.error({ actionType: 'loadData', error: loadDataFailure.error ?? '' }));
+        expect(action).toEqual(ViewStateActions.error({ actionType: 'loadData', error: loadDataFailure.viewStateError ?? '' }));
         done();
       });
 

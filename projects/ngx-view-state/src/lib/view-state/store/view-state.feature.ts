@@ -77,6 +77,7 @@ export function createViewStateFeature<E>() {
 	const { selectEntities, selectAll, selectIds, selectActionStatus, selectLoadingActions, selectViewState } = viewStatesFeature;
 
 	return {
+		initialState,
 		viewStatesFeatureKey,
 		viewStatesFeature,
 		selectViewStateEntities: selectEntities,

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Subject } from 'rxjs';
+import { from, Observable, Subject } from 'rxjs';
 
 import { ErrorStateComponent, LoadingStateComponent } from './components';
 import { ViewStatusEnum } from './models/view-status.enum';
@@ -32,6 +32,10 @@ describe('ViewStateDirective', () => {
       setViewStatus(status: ViewStatus): void {
         this.viewStatus = status;
         this.viewStatusSubject$.next(status);
+      }
+
+      duplicatedViewStatus(): string {
+        return 'duplicatedViewStatus';
       }
     }
 
@@ -111,7 +115,7 @@ describe('ViewStateDirective', () => {
         fixture.componentInstance.setViewStatus(loadingViewStatus());
         fixture.detectChanges();
 
-        expect(fixture.debugElement.queryAll(By.directive(LoadingStateComponent)).length).toBe(3);
+        expect(fixture.debugElement.queryAll(By.directive(LoadingStateComponent)).length).toBe(2)
       });
     });
 
@@ -137,7 +141,7 @@ describe('ViewStateDirective', () => {
 
         fixture.detectChanges();
 
-        expect(fixture.debugElement.queryAll(By.directive(ErrorStateComponent)).length).toBe(3);
+        expect(fixture.debugElement.queryAll(By.directive(ErrorStateComponent)).length).toBe(2)
         expect(fixture.debugElement.query(By.css('h2')).nativeElement.textContent).toContain('Something went wrong');
       });
     });

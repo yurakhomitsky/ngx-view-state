@@ -38,6 +38,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
   }
 
   private _viewState!: T;
+  private _viewStatus: ViewStatus | null = null;
 
   @Input({ required: true, alias: 'appViewState' })
   public set viewState(value: T | null) {
@@ -50,12 +51,17 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
 
     this._viewState = value;
 
-    const viewStatus: ViewStatus =
-      'type' in value ? value : value.viewStatus;
+    const viewStatus: ViewStatus = 'type' in value ? value : value.viewStatus;
+
+    if (this._viewStatus?.type === viewStatus.type) {
+      return;
+    }
+
+    this._viewStatus = viewStatus;
 
     this.onViewStateChange({
       viewStatus,
-      value: value as ViewContextValue<T>
+      value
     });
   }
 
@@ -103,10 +109,10 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     this.viewContainerRef.clear();
   }
 
-  private onViewStateChange(viewModel: { viewStatus: ViewStatus; value: ViewContextValue<T> }): void {
+  private onViewStateChange(viewModel: { viewStatus: ViewStatus; value: T }): void {
     this.viewContainerRef.clear();
-    this.viewContext.$implicit = viewModel.value;
-    this.viewContext.appViewState = viewModel.value;
+    this.viewContext.$implicit = viewModel.value as ViewContextValue<T>;
+    this.viewContext.appViewState = viewModel.value as ViewContextValue<T>;
 
     this.viewStatusHandlers[viewModel.viewStatus.type](viewModel as never);
     this.cdRef.detectChanges();

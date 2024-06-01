@@ -10,11 +10,13 @@ import { ViewStateActionsService } from '../services/view-state-actions.service'
 
 import { ViewStateActions } from './view-state.actions';
 import { ViewStateEffects } from './view-state.effects';
-import { viewStatesFeature } from './view-state.feature';
+import { createViewStateFeature } from './view-state.feature';
 
 describe('ViewStateIntegration', () => {
   let store: Store;
   let actions$: Actions;
+
+  const { viewStatesFeature } = createViewStateFeature<string>()
 
   const apiService = {
     getData: () => of<string[]>([]),

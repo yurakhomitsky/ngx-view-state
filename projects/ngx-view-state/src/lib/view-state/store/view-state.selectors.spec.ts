@@ -3,24 +3,24 @@ import { Action } from '@ngrx/store';
 
 import { idleViewStatus, loadingViewStatus } from '../factories';
 
-import { ViewState } from './view-state.feature';
-import { ViewStateSelectors } from './view-state.selectors';
+import { createViewStateFeature, ViewState } from './view-state.feature';
 
 describe('ViewStateSelectors', () => {
+  const { selectLoadingActions, selectActionStatus } = createViewStateFeature<string>();
   describe('selectActionStatus', () => {
     it('should select action status', () => {
       const action: Action = {
         type: 'update',
       };
 
-      const stateDictionary: Dictionary<ViewState> = {
+      const stateDictionary: Dictionary<ViewState<string>> = {
         [action.type]: {
           actionType: action.type,
           viewStatus: loadingViewStatus(),
         },
       };
 
-      const selector = ViewStateSelectors.selectActionStatus(action);
+      const selector = selectActionStatus(action);
 
       expect(selector.projector(stateDictionary)).toEqual(loadingViewStatus());
     });
@@ -30,9 +30,9 @@ describe('ViewStateSelectors', () => {
         type: 'update',
       };
 
-      const dataStatuses: Dictionary<ViewState> = {};
+      const dataStatuses: Dictionary<ViewState<string>> = {};
 
-      const selector = ViewStateSelectors.selectActionStatus(action);
+      const selector = selectActionStatus(action);
 
       expect(selector.projector(dataStatuses)).toEqual(idleViewStatus());
     });
@@ -48,14 +48,14 @@ describe('ViewStateSelectors', () => {
         type: 'get additional data',
       };
 
-      const stateDictionary: Dictionary<ViewState> = {
+      const stateDictionary: Dictionary<ViewState<string>> = {
         [getAdditionalDataAction.type]: {
           actionType: getAdditionalDataAction.type,
           viewStatus: loadingViewStatus(),
         },
       };
 
-      const selector = ViewStateSelectors.selectLoadingActions(getDataAction, getAdditionalDataAction);
+      const selector = selectLoadingActions(getDataAction, getAdditionalDataAction);
 
       expect(selector.projector(stateDictionary)).toEqual(true);
     });
@@ -69,9 +69,9 @@ describe('ViewStateSelectors', () => {
         type: 'get additional data',
       };
 
-      const stateDictionary: Dictionary<ViewState> = {};
+      const stateDictionary: Dictionary<ViewState<string>> = {};
 
-      const selector = ViewStateSelectors.selectLoadingActions(getDataAction, getAdditionalDataAction);
+      const selector = selectLoadingActions(getDataAction, getAdditionalDataAction);
 
       expect(selector.projector(stateDictionary)).toEqual(false);
     });

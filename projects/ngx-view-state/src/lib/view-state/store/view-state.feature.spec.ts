@@ -1,9 +1,10 @@
 import { errorViewStatus, loadingViewStatus } from '../factories';
 
 import { ViewStateActions } from './view-state.actions';
-import { initialState, viewStatesFeature } from './view-state.feature';
+import { createViewStateFeature } from './view-state.feature';
 
 describe('ViewStateFeature', () => {
+  const { viewStatesFeature, initialState } = createViewStateFeature<string>();
   it('should add loading action if its not in the state', () => {
     const state = viewStatesFeature.reducer(
       initialState,

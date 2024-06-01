@@ -26,9 +26,9 @@ describe('ErrorStateComponent', () => {
   });
 
   it('should display custom error text', () => {
-    component.errorMessage = 'Custom error text';
+    component.viewStateError = 'Custom error text';
 
-    fixture.componentRef.setInput('errorMessage', 'Custom error text');
+    fixture.componentRef.setInput('viewStateError', 'Custom error text');
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('h2')).nativeElement.textContent).toContain('Custom error text');

@@ -5,7 +5,7 @@ export { ComponentViewModel } from './models/component-view-model.model';
 export * from './helpers';
 
 export { ViewStateErrorProps } from './models/view-state-props.model';
-export { ViewStateErrorComponent, ViewStateLoadingComponent } from './models/view-state-component.model';
+export { ViewStateErrorComponent } from './models/view-state-component.model';
 
 export { ViewStateEffects } from './store/view-state.effects';
 export { createViewStateFeature,  } from './store/view-state.feature';

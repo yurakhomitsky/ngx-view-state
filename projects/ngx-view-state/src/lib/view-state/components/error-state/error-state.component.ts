@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ViewStateErrorComponent } from '../../models/view-state-component.model';
 
 @Component({
-  selector: 'app-error-state',
+  selector: 'ngx-error-state',
   standalone: true,
   imports: [],
   template: `

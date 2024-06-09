@@ -1,5 +1,5 @@
 <mat-card class="card">
-	<ng-container *appViewState="viewStatus$ | async">
+	<ng-container *ngxViewState="viewStatus$ | async">
 		<table *ngIf="todos$ | async as todos" mat-table [dataSource]="todos" class="mat-elevation-z8 table">
 			<mat-text-column name="id"></mat-text-column>
 

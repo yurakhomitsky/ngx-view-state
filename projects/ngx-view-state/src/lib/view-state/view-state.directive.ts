@@ -12,21 +12,21 @@ import { ViewStatusEnum } from './models/view-status.enum';
 import { ViewStatus } from './models/view-status.model';
 import { ViewContextValue, ViewStatusHandlers, ViewTypeConstraint } from './view-state.model';
 import { ERROR_STATE_COMPONENT, LOADING_STATE_COMPONENT } from './tokens/default-state-components.token';
-import { ViewStateErrorComponent, ViewStateLoadingComponent } from './models/view-state-component.model';
+import { ViewStateErrorComponent } from './models/view-state-component.model';
 
 export interface ViewStateContext<T> {
   /**
-   * using `$implicit` to enable `let` syntax: `*appViewState="obs$; let o"`
+   * using `$implicit` to enable `let` syntax: `*ngxViewState="obs$; let o"`
    */
   $implicit: ViewContextValue<T>
   /**
-   * using `appViewState` to enable `as` syntax: `*appViewState="obs$ as o"`
+   * using `ngxViewState` to enable `as` syntax: `*ngxViewState="obs$ as o"`
    */
-  appViewState: ViewContextValue<T>
+  ngxViewState: ViewContextValue<T>
 }
 
 @Directive({
-  selector: '[appViewState]',
+  selector: '[ngxViewState]',
   standalone: true,
 })
 export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implements OnDestroy {
@@ -40,7 +40,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
   private _viewState!: T;
   private _viewStatus: ViewStatus | null = null;
 
-  @Input({ required: true, alias: 'appViewState' })
+  @Input({ required: true, alias: 'ngxViewState' })
   public set viewState(value: T | null) {
     // If we use the async pipe the first value will be null
     if (value == null) {
@@ -69,15 +69,15 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     return this._viewState;
   }
 
-  @Input() public appViewStateLoading?: TemplateRef<ViewStateContext<T>>;
+  @Input() public ngxViewStateLoading?: TemplateRef<ViewStateContext<T>>;
 
-  @Input() public appViewStateError?: TemplateRef<ViewStateContext<T>>;
+  @Input() public ngxViewStateError?: TemplateRef<ViewStateContext<T>>;
 
-  @Input() public appViewStateEmpty?: TemplateRef<ViewStateContext<T>>;
+  @Input() public ngxViewStateEmpty?: TemplateRef<ViewStateContext<T>>;
 
   private readonly viewContext: ViewStateContext<T | undefined> = {
     $implicit: undefined,
-    appViewState: undefined,
+    ngxViewState: undefined,
   };
 
   private viewStatusHandlers: ViewStatusHandlers<ViewStatus, T> = {
@@ -102,7 +102,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     @Inject(ERROR_STATE_COMPONENT)
     private errorStateComponent: Type<ViewStateErrorComponent<unknown>>,
     @Inject(LOADING_STATE_COMPONENT)
-    private loadingStateComponent: Type<ViewStateLoadingComponent>,
+    private loadingStateComponent: Type<unknown>,
   ) {}
 
   public ngOnDestroy(): void {
@@ -112,7 +112,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
   private onViewStateChange(viewModel: { viewStatus: ViewStatus; value: T }): void {
     this.viewContainerRef.clear();
     this.viewContext.$implicit = viewModel.value as ViewContextValue<T>;
-    this.viewContext.appViewState = viewModel.value as ViewContextValue<T>;
+    this.viewContext.ngxViewState = viewModel.value as ViewContextValue<T>;
 
     this.viewStatusHandlers[viewModel.viewStatus.type](viewModel as never);
     this.cdRef.detectChanges();
@@ -123,16 +123,16 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
   }
 
   private createSpinner(): void {
-    if (this.appViewStateLoading) {
-      this.viewContainerRef.createEmbeddedView(this.appViewStateLoading, this.viewContext);
+    if (this.ngxViewStateLoading) {
+      this.viewContainerRef.createEmbeddedView(this.ngxViewStateLoading, this.viewContext);
     } else {
       this.viewContainerRef.createComponent(this.loadingStateComponent);
     }
   }
 
   private createErrorState(error?: unknown): void {
-    if (this.appViewStateError) {
-      this.viewContainerRef.createEmbeddedView(this.appViewStateError, this.viewContext);
+    if (this.ngxViewStateError) {
+      this.viewContainerRef.createEmbeddedView(this.ngxViewStateError, this.viewContext);
     } else {
       const component = this.viewContainerRef.createComponent(this.errorStateComponent);
       component.setInput('viewStateError', error);

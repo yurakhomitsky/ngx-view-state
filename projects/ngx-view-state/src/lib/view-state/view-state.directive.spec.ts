@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { from, Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { ErrorStateComponent, LoadingStateComponent } from './components';
 import { ViewStatusEnum } from './models/view-status.enum';
@@ -18,8 +18,8 @@ describe('ViewStateDirective', () => {
       selector: 'app-test-host',
       standalone: true,
       template: `
-        <div *appViewState="viewStatus as viewStatusContext" class="static-content">Content static {{ viewStatusContext.type }}</div>
-        <div *appViewState="viewStatusSubject$ | async as viewStatusContext" class="async-content">
+        <div *ngxViewState="viewStatus as viewStatusContext" class="static-content">Content static {{ viewStatusContext.type }}</div>
+        <div *ngxViewState="viewStatusSubject$ | async as viewStatusContext" class="async-content">
           Content async pipe {{ viewStatusContext.type }}
         </div>
       `,
@@ -32,10 +32,6 @@ describe('ViewStateDirective', () => {
       setViewStatus(status: ViewStatus): void {
         this.viewStatus = status;
         this.viewStatusSubject$.next(status);
-      }
-
-      duplicatedViewStatus(): string {
-        return 'duplicatedViewStatus';
       }
     }
 
@@ -152,7 +148,7 @@ describe('ViewStateDirective', () => {
       selector: 'app-test-host',
       standalone: true,
       template: `
-        <div *appViewState="viewModel as viewModelContext" class="viewModel-content">View Model Content {{ viewModelContext.data }}</div>
+        <div *ngxViewState="viewModel as viewModelContext" class="viewModel-content">View Model Content {{ viewModelContext.data }}</div>
       `,
       imports: [ViewStateDirective],
     })

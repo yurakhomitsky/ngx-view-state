@@ -7,6 +7,8 @@ Run `npm run build-lib watch` to build the library.
 
 Run `npm run start` for a dev server for the Application. Navigate to `http://localhost:4200/`
 
+#### Stackblitz Example
+[https://stackblitz.com/edit/ngx-view-state](https://stackblitz.com/edit/ngx-view-state)
 
 ## Library Documentation
 

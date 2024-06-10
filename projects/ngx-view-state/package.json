@@ -1,6 +1,6 @@
 {
   "name": "ngx-view-state",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "description": "ngx-view-state is a library for managing the Loading/Success/Error states of views in Angular applications that use Ngrx or HttpClient",
   "author": "Yurii Khomitskyi <yura.khomitsky8@gmail.com>",
@@ -10,16 +10,16 @@
     "url": "git+https://github.com/yurakhomitsky/ngx-view-state.git"
   },
   "keywords": [
-    "angular",
-    "ngrx",
+    "Angular",
+    "NgRx",
     "loading",
     "success",
     "error",
     "state",
-    "view-state"
+    "view-state",
+    "State Management"
   ],
   "peerDependencies": {
-    "@angular/common": ">=15.0.0",
     "@angular/core": ">=15.0.0",
     "@ngrx/effects": ">=15.0.0",
     "@ngrx/entity": ">=15.0.0",

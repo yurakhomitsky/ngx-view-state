@@ -63,13 +63,13 @@ constructor(private actions$: Actions, private viewStateActionsService: ViewStat
 	this.viewStateActionsService.add([
 		{
 		  startLoadingOn: TodosActions.loadTodos,
-		  resetLoadingOn: [TodosActions.loadTodosSuccess],
-		  error: [TodosActions.loadTodosFailure]
+		  resetOn: [TodosActions.loadTodosSuccess],
+		  errorOn: [TodosActions.loadTodosFailure]
 		},
 		{
 		  startLoadingOn: TodosActions.addTodo,
-		  resetLoadingOn: [TodosActions.addTodoSuccess],
-		  error: [TodosActions.addTodoFailure]
+		  resetOn: [TodosActions.addTodoSuccess],
+		  errorOn: [TodosActions.addTodoFailure]
 		},
 		// Update and delete actions can be added in the same way
             ]);

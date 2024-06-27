@@ -68,4 +68,59 @@ describe('ViewStateFeature', () => {
       ids: ['123'],
     });
   });
+
+  it('should error many actions to the state', () => {
+    const state = viewStatesFeature.reducer(
+      {
+        entities: {},
+        ids: [],
+      },
+      ViewStateActions.errorMany({
+        actionTypes: [
+          { actionType: '123', error: 'Custom error message' },
+          { actionType: '456', error: 'Custom error message 2' },
+        ],
+      }),
+    );
+
+    expect(state).toEqual({
+      entities: {
+        '123': {
+          actionType: '123',
+          viewStatus: errorViewStatus('Custom error message'),
+        },
+        '456': {
+          actionType: '456',
+          viewStatus: errorViewStatus('Custom error message 2'),
+        },
+      },
+      ids: ['123', '456'],
+    });
+  });
+
+  it('should reset many actions to the state', () => {
+    const state = viewStatesFeature.reducer(
+      {
+        entities: {
+          '123': {
+            actionType: '123',
+            viewStatus: loadingViewStatus(),
+          },
+          '456': {
+            actionType: '456',
+            viewStatus: loadingViewStatus(),
+          },
+        },
+        ids: ['123', '456'],
+      },
+      ViewStateActions.resetMany({
+        actionTypes: ['123', '456'],
+      }),
+    );
+
+    expect(state).toEqual({
+      entities: {},
+      ids: [],
+    });
+  })
 });

@@ -10,54 +10,56 @@ import { ViewStateActions } from './view-state.actions';
 
 @Injectable()
 export class ViewStateEffects {
-  public startLoading$ = this.startLoading();
-  public reset$ = this.reset();
-  public error$ = this.error();
+	public startLoading$ = this.startLoading();
+	public reset$ = this.reset();
+	public error$ = this.error();
 
-  constructor(
-    private actions$: Actions,
-    private viewStateActionsService: ViewStateActionsService,
-  ) {}
+	constructor(
+		private actions$: Actions,
+		private viewStateActionsService: ViewStateActionsService
+	) {
+	}
 
-  private startLoading() {
-    return createEffect(() => {
-      return this.actions$.pipe(
-        filter((action: Action) => {
-          return this.viewStateActionsService.isStartLoadingAction(action);
-        }),
-        map((action: Action) => {
-          return ViewStateActions.startLoading({ actionType: action.type });
-        }),
-      );
-    });
-  }
+	private startLoading() {
+		return createEffect(() => {
+			return this.actions$.pipe(
+				filter((action: Action) => {
+					return this.viewStateActionsService.isViewStateAction(action) && this.viewStateActionsService.isStartLoadingAction(action);
+				}),
+				map((action: Action) => {
+					return ViewStateActions.startLoading({ actionType: action.type });
+				})
+			);
+		});
+	}
 
-  private reset() {
-    return createEffect(() => {
-      return this.actions$.pipe(
-        filter((action: Action) => {
-          return this.viewStateActionsService.isResetLoadingAction(action);
-        }),
-        map((action: Action ) => {
-          return ViewStateActions.reset({ actionType: this.viewStateActionsService.getActionType(action) ?? '' });
-        }),
-      );
-    });
-  }
+	private reset() {
+		return createEffect(() => {
+			return this.actions$.pipe(
+				filter((action: Action) => {
+					return this.viewStateActionsService.isViewStateAction(action) && this.viewStateActionsService.isResetLoadingAction(action);
+				}),
+				map((action: Action) => {
+					return ViewStateActions.resetMany({ actionTypes: this.viewStateActionsService.getResetActionTypes(action) });
+				})
+			);
+		});
+	}
 
-  private error() {
-    return createEffect(() => {
-      return this.actions$.pipe(
-        filter((action: Action) => {
-          return this.viewStateActionsService.isErrorAction(action);
-        }),
-        map((action: Action) => {
-          return ViewStateActions.error({
-            actionType: this.viewStateActionsService.getActionType(action) ?? '',
-            error: (action as Action & ViewStateErrorProps)?.viewStateError ?? undefined
-          });
-        }),
-      );
-    });
-  }
+	private error() {
+		return createEffect(() => {
+			return this.actions$.pipe(
+				filter((action: Action) => {
+					return this.viewStateActionsService.isViewStateAction(action) && this.viewStateActionsService.isErrorAction(action);
+				}),
+				map((action: Action) => {
+					return ViewStateActions.errorMany({
+						actionTypes: this.viewStateActionsService.getErrorActionTypes(action).map((actionType) => {
+							return { actionType, error: (action as Action & ViewStateErrorProps)?.viewStateError ?? undefined };
+						})
+					});
+				})
+			);
+		});
+	}
 }

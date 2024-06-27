@@ -17,23 +17,23 @@ export class TodosEffects {
 		this.viewStateActionsService.add([
 			{
 				startLoadingOn: TodosActions.loadTodos,
-				resetLoadingOn: [TodosActions.loadTodosSuccess],
-				error: [TodosActions.loadTodosFailure]
+				resetOn: [TodosActions.loadTodosSuccess],
+				errorOn: [TodosActions.loadTodosFailure]
 			},
 			{
 				startLoadingOn: TodosActions.addTodo,
-				resetLoadingOn: [TodosActions.addTodoSuccess],
-				error: [TodosActions.addTodoFailure]
+				resetOn: [TodosActions.addTodoSuccess],
+				errorOn: [TodosActions.addTodoFailure]
 			},
 			{
 				startLoadingOn: TodosActions.updateTodo,
-				resetLoadingOn: [TodosActions.updateTodoSuccess],
-				error: [TodosActions.updateTodoFailure]
+				resetOn: [TodosActions.updateTodoSuccess],
+				errorOn: [TodosActions.updateTodoFailure]
 			},
 			{
 				startLoadingOn: TodosActions.deleteTodo,
-				resetLoadingOn: [TodosActions.deleteTodoSuccess],
-				error: [TodosActions.deleteTodoFailure]
+				resetOn: [TodosActions.deleteTodoSuccess],
+				errorOn: [TodosActions.deleteTodoFailure]
 			}
 		]);
 	}

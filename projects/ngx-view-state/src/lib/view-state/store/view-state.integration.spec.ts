@@ -42,8 +42,8 @@ describe('ViewStateIntegration', () => {
       this.viewStateActionsService.add([
         {
           startLoadingOn: DataActions.loadData,
-          resetLoadingOn: [DataActions.loadDataSuccess],
-          error: [DataActions.loadDataFailure],
+          resetOn: [DataActions.loadDataSuccess],
+          errorOn: [DataActions.loadDataFailure],
         },
       ]);
     }

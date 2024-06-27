@@ -6,8 +6,8 @@ export type ActionsMapConfig = { viewState: 'startLoading'  } | { viewState: 're
 
 export interface ViewStateActionsConfig {
   startLoadingOn: Action;
-  resetLoadingOn: Action[];
-  error: Action[];
+  resetOn: Action[];
+  errorOn: Action[];
 }
 
 
@@ -46,11 +46,11 @@ export class ViewStateActionsService {
     actions.forEach((action: ViewStateActionsConfig) => {
       this.actionsMap.set(action.startLoadingOn.type, { viewState: 'startLoading' });
 
-      action.resetLoadingOn.forEach((resetLoading: Action) => {
+      action.resetOn.forEach((resetLoading: Action) => {
         this.actionsMap.set(resetLoading.type, { viewState: 'resetLoading', actionType: action.startLoadingOn.type });
       });
 
-      action.error.forEach((errorAction: Action) => {
+      action.errorOn.forEach((errorAction: Action) => {
         this.actionsMap.set(errorAction.type, { viewState: 'error', actionType: action.startLoadingOn.type });
       });
     });

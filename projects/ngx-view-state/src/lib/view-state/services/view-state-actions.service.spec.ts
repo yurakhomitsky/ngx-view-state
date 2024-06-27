@@ -13,8 +13,8 @@ describe('ViewStateActionsService', () => {
   const actionsConfig: ViewStateActionsConfig[] = [
     {
       startLoadingOn: loadData,
-      resetLoadingOn: [loadDataSuccess],
-      error: [lodDataFailure],
+      resetOn: [loadDataSuccess],
+      errorOn: [lodDataFailure],
     },
   ];
 

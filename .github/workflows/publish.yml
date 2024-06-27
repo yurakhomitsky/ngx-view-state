@@ -1,7 +1,10 @@
 name: Publish to npm
 
 on:
+  workflow_dispatch:
   push:
+    tags:
+      - v*
     branches:
       - master
 

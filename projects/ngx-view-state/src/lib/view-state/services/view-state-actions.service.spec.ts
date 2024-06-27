@@ -4,86 +4,119 @@ import { Action } from '@ngrx/store';
 import { ViewStateActionsConfig, ViewStateActionsService } from './view-state-actions.service';
 
 describe('ViewStateActionsService', () => {
-  let service: ViewStateActionsService;
+	let service: ViewStateActionsService;
 
-  const loadData: Action = { type: 'load data' };
-  const loadDataSuccess: Action = { type: 'data loaded success' };
-  const lodDataFailure: Action = { type: 'data loaded failure' };
+	const loadData: Action = { type: 'load data' };
+	const loadDataSuccess: Action = { type: 'data loaded success' };
+	const lodDataFailure: Action = { type: 'data loaded failure' };
 
-  const actionsConfig: ViewStateActionsConfig[] = [
-    {
-      startLoadingOn: loadData,
-      resetOn: [loadDataSuccess],
-      errorOn: [lodDataFailure],
-    },
-  ];
+	const loadData2: Action = { type: 'load data 2' };
+	const loadDataSuccess2: Action = { type: 'data loaded success 2' };
+	const lodDataFailure2: Action = { type: 'data loaded failure 2' };
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(ViewStateActionsService);
-  });
+	const actionsConfig: ViewStateActionsConfig[] = [
+		{
+			startLoadingOn: loadData,
+			resetOn: [loadDataSuccess, loadData2],
+			errorOn: [lodDataFailure, lodDataFailure2]
+		},
+		{
+			startLoadingOn: loadData2,
+			resetOn: [loadDataSuccess2],
+			errorOn: [lodDataFailure2]
+		}
+	];
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+	beforeEach(() => {
+		TestBed.configureTestingModule({});
+		service = TestBed.inject(ViewStateActionsService);
+	});
 
-  beforeEach(() => {
-    service.add(actionsConfig);
-  });
+	it('should be created', () => {
+		expect(service).toBeTruthy();
+	});
 
-  describe('isStartLoadingAction', () => {
-    it('should return true for loadData action', () => {
-      expect(service.isStartLoadingAction(loadData)).toBe(true);
-    });
+	beforeEach(() => {
+		service.add(actionsConfig);
+	});
 
-    it('should return false for loadDataSuccess', () => {
-      expect(service.isStartLoadingAction(loadDataSuccess)).toBe(false);
-    });
+	it('should contain correct actions', () => {
+		expect(service.actionsMap.get(loadData.type)).toEqual([{ viewState: 'startLoading' }]);
+		expect(service.actionsMap.get(loadDataSuccess.type)).toEqual([{ viewState: 'reset', actionType: loadData.type }]);
+		expect(service.actionsMap.get(lodDataFailure.type)).toEqual([{ viewState: 'error', actionType: loadData.type }]);
 
-    it('should return false for lodDataFailure', () => {
-      expect(service.isStartLoadingAction(lodDataFailure)).toBe(false);
-    });
-  });
+		expect(service.actionsMap.get(loadData2.type))
+			.toEqual(jasmine.arrayContaining(
+					[
+						{ viewState: 'startLoading' }, { viewState: 'reset', actionType: loadData.type }
+					]
+				)
+			);
+		expect(service.actionsMap.get(loadDataSuccess2.type)).toEqual([{ viewState: 'reset', actionType: loadData2.type }]);
+		expect(service.actionsMap.get(lodDataFailure2.type))
+			.toEqual(jasmine.arrayContaining(
+					[
+						{ viewState: 'error', actionType: loadData2.type }, { viewState: 'error', actionType: loadData.type }
+					]
+				)
+			);
+	});
 
-  describe('isResetLoadingAction', () => {
-    it('should return true for loadDataSuccess', () => {
-      expect(service.isResetLoadingAction(loadDataSuccess)).toBe(true);
-    });
+	describe('isStartLoadingAction', () => {
+		it('should return true for loadData action', () => {
+			expect(service.isStartLoadingAction(loadData)).toBe(true);
+		});
 
-    it('should return true for lodDataFailure', () => {
-      expect(service.isResetLoadingAction(lodDataFailure)).toBe(false);
-    });
+		it('should return false for loadDataSuccess', () => {
+			expect(service.isStartLoadingAction(loadDataSuccess)).toBe(false);
+		});
 
-    it('should return false for loadData', () => {
-      expect(service.isResetLoadingAction(loadData)).toBe(false);
-    });
-  });
+		it('should return false for lodDataFailure', () => {
+			expect(service.isStartLoadingAction(lodDataFailure)).toBe(false);
+		});
 
-  describe('isErrorAction', () => {
-    it('should return true for loadDataFailure', () => {
-      expect(service.isErrorAction(lodDataFailure)).toBe(true);
-    });
+		it('should return true for loadData2', () => {
+			expect(service.isStartLoadingAction(loadData2)).toBe(true);
+		});
+	});
 
-    it('should return false for loadDataSuccess', () => {
-      expect(service.isErrorAction(loadDataSuccess)).toBe(false);
-    });
+	describe('isResetLoadingAction', () => {
+		it('should return true for loadDataSuccess', () => {
+			expect(service.isResetLoadingAction(loadDataSuccess)).toBe(true);
+		});
 
-    it('should return false for loadData', () => {
-      expect(service.isErrorAction(loadData)).toBe(false);
-    });
-  });
+		it('should return true for lodDataFailure', () => {
+			expect(service.isResetLoadingAction(lodDataFailure)).toBe(false);
+		});
 
-  describe('getResetLoadingId', () => {
-    it('should return null', () => {
-      expect(service.getActionType({ type: 'some action' })).toBe(null);
-    });
+		it('should return false for loadData', () => {
+			expect(service.isResetLoadingAction(loadData)).toBe(false);
+		});
 
-    it('should get correct resetLoadingId for loadDataSuccess', () => {
-      expect(service.getActionType(loadDataSuccess)).toBe(loadData.type);
-    });
+		it('should return true for loadDataSuccess2', () => {
+			expect(service.isResetLoadingAction(loadDataSuccess2)).toBe(true);
+		});
 
-    it('should get correct resetLoadingId for lodDataFailure', () => {
-      expect(service.getActionType(lodDataFailure)).toBe(loadData.type);
-    });
-  });
+		it('should return true for loadData2', () => {
+			expect(service.isResetLoadingAction(loadData2)).toBe(true);
+		});
+	});
+
+	describe('isErrorAction', () => {
+		it('should return true for loadDataFailure', () => {
+			expect(service.isErrorAction(lodDataFailure)).toBe(true);
+		});
+
+		it('should return false for loadDataSuccess', () => {
+			expect(service.isErrorAction(loadDataSuccess)).toBe(false);
+		});
+
+		it('should return false for loadData', () => {
+			expect(service.isErrorAction(loadData)).toBe(false);
+		});
+
+		it('should return true for loadDataFailure2', () => {
+			expect(service.isErrorAction(lodDataFailure2)).toBe(true);
+		});
+	});
 });

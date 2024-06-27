@@ -17,7 +17,9 @@ describe('ViewStateEffects', () => {
     'isStartLoadingAction',
     'isErrorAction',
     'isResetLoadingAction',
-    'getActionType',
+    'getResetActionTypes',
+    'getErrorActionTypes',
+    'isViewStateAction',
   ]);
 
   beforeEach(() => {
@@ -30,6 +32,8 @@ describe('ViewStateEffects', () => {
         { provide: ViewStateActionsService, useValue: viewStateActionsServiceSpy },
       ],
     });
+
+    viewStateActionsServiceSpy.isViewStateAction.and.returnValue(true);
 
     effects = TestBed.inject(ViewStateEffects);
   });
@@ -68,16 +72,16 @@ describe('ViewStateEffects', () => {
   });
 
   describe('reset$', () => {
-    it('should map to reset action', (done) => {
+    it('should map to resetMany action', (done) => {
       const loadDataSuccess: Action = { type: 'loadDataSuccess' };
 
       effects.reset$.subscribe((action) => {
-        expect(action).toEqual(ViewStateActions.reset({ actionType: 'loadData' }));
+        expect(action).toEqual(ViewStateActions.resetMany({ actionTypes: ['loadData'] }));
         done();
       });
 
       viewStateActionsServiceSpy.isResetLoadingAction.and.returnValue(true);
-      viewStateActionsServiceSpy.getActionType.and.returnValue('loadData');
+      viewStateActionsServiceSpy.getResetActionTypes.and.returnValue(['loadData']);
 
       actions$.next(loadDataSuccess);
     });
@@ -97,16 +101,16 @@ describe('ViewStateEffects', () => {
   });
 
   describe('error$', () => {
-    it('should map to error action', (done) => {
+    it('should map to errorMany action', (done) => {
       const loadDataFailure: Action & ViewStateErrorProps<string> = { type: 'loadDataFailure', viewStateError: 'custom error message' };
 
       effects.error$.subscribe((action) => {
-        expect(action).toEqual(ViewStateActions.error({ actionType: 'loadData', error: loadDataFailure.viewStateError ?? '' }));
+        expect(action).toEqual(ViewStateActions.errorMany({actionTypes: [{ actionType: 'loadData', error: loadDataFailure.viewStateError ?? '' }]}));
         done();
       });
 
       viewStateActionsServiceSpy.isErrorAction.and.returnValue(true);
-      viewStateActionsServiceSpy.getActionType.and.returnValue('loadData');
+      viewStateActionsServiceSpy.getErrorActionTypes.and.returnValue(['loadData']);
 
       actions$.next(loadDataFailure);
     });

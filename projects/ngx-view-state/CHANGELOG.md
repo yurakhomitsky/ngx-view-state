@@ -1,5 +1,9 @@
 ## Changelog
 
+## 2.1.0
+
+- fix: If the same action was included in multiple `ViewStateActionsConfig` configs, only last action config would be used. The store, effects and service now correctly handles multiple actions across different configs.
+
 ## 2.0.0    
 
 - Rename ViewStateActionsConfig properties

@@ -37,8 +37,19 @@ export function createViewStateFeature<E>() {
 		on(ViewStateActions.error, (state, { actionType, error }) => {
 			return adapter.upsertOne({ actionType, viewStatus: errorViewStatus<E>(error as E) }, state);
 		}),
+		on(ViewStateActions.errorMany, (state, { actionTypes }) => {
+			return adapter.upsertMany(actionTypes.map(({ actionType, error }) => {
+				return {
+					actionType,
+					viewStatus: errorViewStatus<E>(error as E)
+				}
+			}), state);
+		}),
 		on(ViewStateActions.reset, (state, { actionType }) => {
 			return adapter.removeOne(actionType, state);
+		}),
+		on(ViewStateActions.resetMany, (state, { actionTypes }) => {
+			return adapter.removeMany(actionTypes, state);
 		})
 	);
 
@@ -74,7 +85,14 @@ export function createViewStateFeature<E>() {
 		}
 	});
 
-	const { selectEntities, selectAll, selectIds, selectActionStatus, selectLoadingActions, selectViewState } = viewStatesFeature;
+	const {
+		selectEntities,
+		selectAll,
+		selectIds,
+		selectActionStatus,
+		selectLoadingActions,
+		selectViewState
+	} = viewStatesFeature;
 
 	return {
 		initialState,

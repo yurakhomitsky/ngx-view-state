@@ -21,7 +21,7 @@ export interface ViewState<E> {
 }
 
 export function createViewStateFeature<E>() {
-	const viewStatesFeatureKey = 'viewStates';
+	const viewStatesFeatureName = 'viewStates';
 
 	const adapter: EntityAdapter<ViewState<E>> = createEntityAdapter<ViewState<E>>({
 		selectId: (viewState: ViewState<E>) => viewState.actionType
@@ -42,7 +42,7 @@ export function createViewStateFeature<E>() {
 				return {
 					actionType,
 					viewStatus: errorViewStatus<E>(error as E)
-				}
+				};
 			}), state);
 		}),
 		on(ViewStateActions.reset, (state, { actionType }) => {
@@ -54,16 +54,16 @@ export function createViewStateFeature<E>() {
 	);
 
 	const viewStatesFeature = createFeature({
-		name: viewStatesFeatureKey,
+		name: viewStatesFeatureName,
 		reducer,
 		extraSelectors: ({ selectViewStatesState, selectEntities }) => {
-			function selectLoadingActions(...actions: Action[]): MemoizedSelector<object, boolean, DefaultProjectorFn<boolean>> {
-				return createSelector(selectEntities, (actionStatuses: Dictionary<ViewState<E>>) => {
-					return actions.some((action: Action): boolean => actionStatuses[action.type]?.viewStatus.type === ViewStatusEnum.LOADING);
-				});
-			}
+			const selectIsAnyActionLoading = createSelectorForActionStatus(selectEntities, ViewStatusEnum.LOADING);
+			const selectIsAnyActionError = createSelectorForActionStatus(selectEntities, ViewStatusEnum.ERROR);
+			const selectIsAnyActionLoaded = createSelectorForActionStatus(selectEntities, ViewStatusEnum.LOADED);
+			const selectIsAnyActionIdle = createSelectorForActionStatus(selectEntities, ViewStatusEnum.IDLE);
 
-			function selectActionStatus(action: Action): MemoizedSelector<object, ViewStatus<E>, DefaultProjectorFn<ViewStatus<E>>> {
+
+			function selectActionViewStatus(action: Action): MemoizedSelector<object, ViewStatus<E>, DefaultProjectorFn<ViewStatus<E>>> {
 				return createSelector(selectEntities, (actionsMap: Dictionary<ViewState<E>>): ViewStatus<E> => {
 					return (actionsMap[action.type]?.viewStatus as ViewStatus<E>) ?? idleViewStatus();
 				});
@@ -78,8 +78,11 @@ export function createViewStateFeature<E>() {
 
 			return {
 				...adapter.getSelectors(selectViewStatesState),
-				selectLoadingActions,
-				selectActionStatus,
+				selectIsAnyActionLoading,
+				selectIsAnyActionError,
+				selectIsAnyActionLoaded,
+				selectIsAnyActionIdle,
+				selectActionViewStatus,
 				selectViewState
 			};
 		}
@@ -89,20 +92,37 @@ export function createViewStateFeature<E>() {
 		selectEntities,
 		selectAll,
 		selectIds,
-		selectActionStatus,
-		selectLoadingActions,
+		selectActionViewStatus,
+		selectIsAnyActionLoading,
+		selectIsAnyActionLoaded,
+		selectIsAnyActionError,
+		selectIsAnyActionIdle,
 		selectViewState
 	} = viewStatesFeature;
 
 	return {
 		initialState,
-		viewStatesFeatureKey,
+		viewStatesFeatureName,
 		viewStatesFeature,
 		selectViewStateEntities: selectEntities,
-		selectViewStateIds: selectIds,
+		selectViewStateActionTypes: selectIds,
 		selectAllViewState: selectAll,
-		selectActionStatus,
-		selectLoadingActions,
-		selectViewState
+		selectActionViewStatus,
+		selectViewState,
+		selectIsAnyActionLoading,
+		selectIsAnyActionLoaded,
+		selectIsAnyActionError,
+		selectIsAnyActionIdle,
 	};
 }
+
+function createSelectorForActionStatus<E>(
+	selectEntities: MemoizedSelector<Record<string, any>, Dictionary<ViewState<E>>>,
+	status: ViewStatusEnum): (...actions: Action[]) => MemoizedSelector<Record<string, any>, boolean, DefaultProjectorFn<boolean>> {
+	return (...actions: Action[]) => {
+		return createSelector(selectEntities, (actionStatuses: Dictionary<ViewState<E>>) => {
+			return actions.some((action: Action): boolean => actionStatuses[action.type]?.viewStatus.type === status);
+		});
+	};
+}
+

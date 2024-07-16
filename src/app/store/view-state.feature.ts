@@ -1,4 +1,4 @@
 import { createViewStateFeature } from 'ngx-view-state';
 
 
-export const { viewStatesFeature, selectActionStatus, selectLoadingActions } = createViewStateFeature<string>()
+export const { viewStatesFeature, selectActionViewStatus, selectIsAnyActionLoading } = createViewStateFeature<string>()

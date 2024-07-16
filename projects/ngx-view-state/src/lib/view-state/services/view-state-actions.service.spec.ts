@@ -41,19 +41,19 @@ describe('ViewStateActionsService', () => {
 	});
 
 	it('should contain correct actions', () => {
-		expect(service.actionsMap.get(loadData.type)).toEqual([{ viewState: 'startLoading' }]);
-		expect(service.actionsMap.get(loadDataSuccess.type)).toEqual([{ viewState: 'reset', actionType: loadData.type }]);
-		expect(service.actionsMap.get(lodDataFailure.type)).toEqual([{ viewState: 'error', actionType: loadData.type }]);
+		expect(service.getActionConfigs(loadData)).toEqual([{ viewState: 'startLoading' }]);
+		expect(service.getActionConfigs(loadDataSuccess)).toEqual([{ viewState: 'reset', actionType: loadData.type }]);
+		expect(service.getActionConfigs(lodDataFailure)).toEqual([{ viewState: 'error', actionType: loadData.type }]);
 
-		expect(service.actionsMap.get(loadData2.type))
+		expect(service.getActionConfigs(loadData2))
 			.toEqual(jasmine.arrayContaining(
 					[
 						{ viewState: 'startLoading' }, { viewState: 'reset', actionType: loadData.type }
 					]
 				)
 			);
-		expect(service.actionsMap.get(loadDataSuccess2.type)).toEqual([{ viewState: 'reset', actionType: loadData2.type }]);
-		expect(service.actionsMap.get(lodDataFailure2.type))
+		expect(service.getActionConfigs(loadDataSuccess2)).toEqual([{ viewState: 'reset', actionType: loadData2.type }]);
+		expect(service.getActionConfigs(lodDataFailure2))
 			.toEqual(jasmine.arrayContaining(
 					[
 						{ viewState: 'error', actionType: loadData2.type }, { viewState: 'error', actionType: loadData.type }
@@ -61,6 +61,20 @@ describe('ViewStateActionsService', () => {
 				)
 			);
 	});
+
+	describe('remove', () => {
+		it('should remove config for an action', () => {
+			service.remove(loadData);
+
+			expect(service.isViewStateAction(loadData)).toBe(false);
+		});
+
+		it('should remove config for an action from other configs', () => {
+			service.remove(loadData);
+
+			expect(service.getActionConfigs(loadData2)).toEqual([{ viewState: 'startLoading' }]);
+		})
+	})
 
 	describe('isStartLoadingAction', () => {
 		it('should return true for loadData action', () => {

@@ -15,7 +15,7 @@ export interface ViewStateActionsConfig {
   providedIn: 'root',
 })
 export class ViewStateActionsService {
-  public readonly actionsMap = new Map<string, ActionsMapConfig[]>();
+  private readonly actionsMap = new Map<string, ActionsMapConfig[]>();
 
   public isViewStateAction(action: Action): boolean {
     return this.actionsMap.has(action.type);
@@ -70,6 +70,17 @@ export class ViewStateActionsService {
       action.errorOn.forEach((errorAction: Action) => {
         this.addActionToMap(errorAction.type, { viewState: 'error', actionType: action.startLoadingOn.type });
       });
+    });
+  }
+
+  public remove(action: Action): void {
+    this.actionsMap.delete(action.type);
+
+    this.actionsMap.forEach((configs: ActionsMapConfig[], key ) => {
+      const filteredConfigs = configs.filter((config: ActionsMapConfig) => {
+        return config.viewState === 'startLoading' || config.actionType !== action.type;
+      });
+      this.actionsMap.set(key, filteredConfigs);
     });
   }
 

@@ -12,7 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
-import { selectTodosViewState, selectActionsLoading } from './store/todos.selectors';
+import { selectTodosViewStatus, selectActionsLoading } from './store/todos.selectors';
 import { LoadingComponent } from './components/loading/loading.component';
 
 @Component({
@@ -25,7 +25,7 @@ import { LoadingComponent } from './components/loading/loading.component';
 export class TodosComponent {
 	public displayedColumns: (keyof Todo | 'delete')[] = ['id', 'title', 'completed', 'delete'];
 	public todos$ = this.store.select(selectTodos);
-	public viewStatus$ = this.store.select(selectTodosViewState);
+	public viewStatus$ = this.store.select(selectTodosViewStatus);
 	public isOverlayLoading$ = this.store.select(selectActionsLoading);
 	public title = '';
 

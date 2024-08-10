@@ -1,6 +1,6 @@
 <h1 style="text-align: center;">NgxViewState</h1>
 
-The `ngx-view-state` library is designed to simplify managing view states of HTTP requests in Angular applications that use NGRX.
+The `ngx-view-state` library is designed to simplify managing view states(Loading, Success, Error) of HTTP requests in Angular applications that use NGRX.
 
 This library provides set of utils that allow developers to handle different view states such as loading, error, and loaded states.
 
@@ -11,8 +11,9 @@ This library provides set of utils that allow developers to handle different vie
 * [Usage ngxViewState directive](#usage-ngxviewstate-directive)
 * [Components customization](#components-customization)
 * [Usage with HttpClient](#usage-with-httpclient)
+* [Documentation](#documentation)
 
-#### [Stackblitz Example](https://stackblitz.com/edit/ngx-view-state)
+### [Stackblitz Example](https://stackblitz.com/edit/ngx-view-state)
 
 ### [Medium blog post](https://medium.com/@yura.khomitsky8/a-single-state-for-loading-success-error-in-ngrx-e50c5d782478)
 

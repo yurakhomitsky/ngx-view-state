@@ -1,4 +1,4 @@
-import { createEntityAdapter, Dictionary, EntityAdapter } from '@ngrx/entity';
+import { createEntityAdapter, Dictionary } from '@ngrx/entity';
 import {
 	Action,
 	createFeature,
@@ -10,21 +10,21 @@ import {
 } from '@ngrx/store';
 
 import { errorViewStatus, idleViewStatus, loadingViewStatus } from '../factories';
-import { ViewStatus } from '../models/view-status.model';
+import { BaseViewStatus, ViewStatus } from '../models/view-status.model';
 
 import { ViewStateActions } from './view-state.actions';
 import { ViewStatusEnum } from '../models/view-status.enum';
 
-export interface ViewState<E> {
+export interface ViewState<E, T extends BaseViewStatus = never> {
 	actionType: string;
-	viewStatus: ViewStatus<E>;
+	viewStatus: ViewStatus<E> | T;
 }
 
-export function createViewStateFeature<E>() {
+export function createViewStateFeature<E, T extends BaseViewStatus = never>() {
 	const viewStatesFeatureName = 'viewStates';
 
-	const adapter: EntityAdapter<ViewState<E>> = createEntityAdapter<ViewState<E>>({
-		selectId: (viewState: ViewState<E>) => viewState.actionType
+	const adapter = createEntityAdapter<ViewState<E, T>>({
+		selectId: (viewState) => viewState.actionType
 	});
 
 	const initialState = adapter.getInitialState({});
@@ -63,14 +63,14 @@ export function createViewStateFeature<E>() {
 			const selectIsAnyActionIdle = createSelectorForActionStatus(selectEntities, ViewStatusEnum.IDLE);
 
 
-			function selectActionViewStatus(action: Action): MemoizedSelector<object, ViewStatus<E>, DefaultProjectorFn<ViewStatus<E>>> {
-				return createSelector(selectEntities, (actionsMap: Dictionary<ViewState<E>>): ViewStatus<E> => {
-					return (actionsMap[action.type]?.viewStatus as ViewStatus<E>) ?? idleViewStatus();
+			function selectActionViewStatus(action: Action): MemoizedSelector<object, T | ViewStatus<E>, DefaultProjectorFn<T | ViewStatus<E>>> {
+				return createSelector(selectEntities, (actionsMap) => {
+					return (actionsMap[action.type]?.viewStatus) ?? (idleViewStatus())
 				});
 			}
 
-			function selectViewState(action: Action): MemoizedSelector<object, ViewState<E>, DefaultProjectorFn<ViewState<E>>> {
-				return createSelector(selectEntities, (actionsMap: Dictionary<ViewState<E>>): ViewState<E> => {
+			function selectViewState(action: Action): MemoizedSelector<object, ViewState<E, T>, DefaultProjectorFn<ViewState<E, T>>> {
+				return createSelector(selectEntities, (actionsMap): ViewState<E, T> => {
 						return actionsMap[action.type] ?? { actionType: action.type, viewStatus: idleViewStatus() };
 					}
 				);
@@ -116,11 +116,11 @@ export function createViewStateFeature<E>() {
 	};
 }
 
-function createSelectorForActionStatus<E>(
-	selectEntities: MemoizedSelector<Record<string, any>, Dictionary<ViewState<E>>>,
+function createSelectorForActionStatus<T extends BaseViewStatus>(
+	selectEntities: MemoizedSelector<Record<string, any>, Dictionary<ViewState<any, T>>>,
 	status: ViewStatusEnum): (...actions: Action[]) => MemoizedSelector<Record<string, any>, boolean, DefaultProjectorFn<boolean>> {
 	return (...actions: Action[]) => {
-		return createSelector(selectEntities, (actionStatuses: Dictionary<ViewState<E>>) => {
+		return createSelector(selectEntities, (actionStatuses) => {
 			return actions.some((action: Action): boolean => actionStatuses[action.type]?.viewStatus.type === status);
 		});
 	};

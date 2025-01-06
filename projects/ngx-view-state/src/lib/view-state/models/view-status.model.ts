@@ -1,5 +1,9 @@
 import { ViewStatusEnum } from './view-status.enum';
 
+export interface BaseViewStatus {
+  readonly type: string;
+}
+
 export interface ViewIdle {
   readonly type: ViewStatusEnum.IDLE;
 }

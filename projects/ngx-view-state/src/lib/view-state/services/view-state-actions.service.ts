@@ -4,11 +4,15 @@ import { Action } from '@ngrx/store';
 
 export type ActionsMapConfig = { viewState: 'startLoading'  } | { viewState: 'reset', actionType: string } | { viewState: 'error', actionType: string };
 
-export interface ViewStateActionsConfig {
+export type ViewStateActionsConfig = {
   startLoadingOn: Action;
-  resetOn: Action[];
   errorOn: Action[];
-}
+} & (
+  | { resetOn: Action[] }
+  | { resetWhenAll: Action[] }
+  );
+
+// We could store something in the store and then map to a particular action to reduce the count of the actions
 
 
 @Injectable({

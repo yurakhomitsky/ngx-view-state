@@ -3,8 +3,6 @@ import { ViewStateErrorComponent } from '../../models/view-state-component.model
 
 @Component({
   selector: 'ngx-error-state',
-  standalone: true,
-  imports: [],
   template: `
     <h2>{{ viewStateError || 'There is an error displaying this data' }}</h2>
   `,

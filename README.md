@@ -1,6 +1,4 @@
-<div align="center">
-    <h1>ngx-view-state</h1>
-</div>
+<h1>NgxViewState</h1>
 
 
 > Library for managing Loading/Success/Error in Angular applications that use NgRx.

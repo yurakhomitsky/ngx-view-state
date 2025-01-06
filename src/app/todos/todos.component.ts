@@ -17,7 +17,6 @@ import { LoadingComponent } from './components/loading/loading.component';
 
 @Component({
 	selector: 'app-todos',
-	standalone: true,
 	imports: [CommonModule, ViewStateDirective, MatCardModule, MatTableModule, MatCheckbox, MatFormFieldModule, MatButton, FormsModule, MatInputModule, LoadingComponent],
 	templateUrl: './todos.component.html',
 	styleUrl: './todos.component.css'

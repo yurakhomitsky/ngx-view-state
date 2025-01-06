@@ -2,8 +2,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'ngx-loading-state',
-  standalone: true,
-  imports: [],
   template: '<p>Loading...</p> ',
   styles: [
     `

@@ -1,5 +1,10 @@
 ## Changelog
 
+## 4.0.0
+
+General changes:
+- Angular/NgRx update to v19
+
 ## 3.2.1
 
 General changes:

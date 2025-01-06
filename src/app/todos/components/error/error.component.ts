@@ -3,8 +3,6 @@ import { ViewStateErrorComponent } from 'ngx-view-state';
 
 @Component({
   selector: 'app-error',
-  standalone: true,
-  imports: [],
   template: `
     <p>
       Oops! Something went wrong: {{ viewStateError }}

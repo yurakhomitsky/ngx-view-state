@@ -4,7 +4,6 @@ import { MatToolbar } from '@angular/material/toolbar';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [TodosComponent, MatToolbar],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

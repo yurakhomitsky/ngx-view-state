@@ -16,7 +16,6 @@ describe('ViewStateDirective', () => {
   describe('viewStatus', () => {
     @Component({
       selector: 'app-test-host',
-      standalone: true,
       template: `
         <div *ngxViewState="viewStatus as viewStatusContext" class="static-content">Content static {{ viewStatusContext.type }}</div>
         <div *ngxViewState="viewStatusSubject$ | async as viewStatusContext" class="async-content">
@@ -146,7 +145,6 @@ describe('ViewStateDirective', () => {
   describe('viewModel', () => {
     @Component({
       selector: 'app-test-host',
-      standalone: true,
       template: `
         <div *ngxViewState="viewModel as viewModelContext" class="viewModel-content">View Model Content {{ viewModelContext.data }}</div>
       `,

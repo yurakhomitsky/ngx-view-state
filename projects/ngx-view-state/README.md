@@ -1,6 +1,4 @@
-<div align="center">
-    <h1>ngx-view-state</h1>
-</div>
+<h1>NgxViewState</h1>
 
 The `ngx-view-state` library is designed to simplify managing Loading/Success/Error states in Angular applications that use NgRx.
 
@@ -110,7 +108,6 @@ import { ViewStateDirective } from 'ngx-view-state';
 
 @Component({
 	selector: 'app-todos',
-	standalone: true,
 	imports: [ViewStateDirective],
 	templateUrl: './todos.component.html',
 	styleUrl: './todos.component.css'
@@ -195,7 +192,6 @@ import { TodosService } from './todos.service';
 
 @Component({
     selector: 'app-todos',
-    standalone: true,
     imports: [ViewStateDirective],
     templateUrl: './todos.component.html',
     styleUrl: './todos.component.css'
@@ -416,7 +412,6 @@ An interface to implement the error state component.
 
 @Component({
   selector: 'ngx-error-state',
-  standalone: true,
   imports: [],
   template: `
     <h2>{{ viewStateError || 'There is an error displaying this data' }}</h2>

@@ -1,13 +1,14 @@
-<h1 style="text-align: center;">NgxViewState</h1>
+<div align="center">
+    <h1>ngx-view-state</h1>
+</div>
 
-The `ngx-view-state` library is designed to simplify managing view states(Loading, Success, Error) of HTTP requests in Angular applications that use NGRX.
+The `ngx-view-state` library is designed to simplify managing Loading/Success/Error states in Angular applications that use NgRx.
 
-This library provides set of utils that allow developers to handle different view states such as loading, error, and loaded states.
 
 ## Overview
 
 * [Installation](#installation)
-* [Usage with Ngrx](#usage-with-ngrx)
+* [Usage with NgRx](#usage-with-ngrx)
 * [Usage ngxViewState directive](#usage-ngxviewstate-directive)
 * [Components customization](#components-customization)
 * [Usage with HttpClient](#usage-with-httpclient)
@@ -23,9 +24,9 @@ This library provides set of utils that allow developers to handle different vie
 Run: `npm install ngx-view-state`
 
 
-## Usage With Ngrx
+## Usage With NgRx
 
-1. Create view state feature and pass generic type for the error state
+#### 1. Create view state feature and pass generic type for the error state
     
 ``` typescript
 // view-state.feature.ts
@@ -37,7 +38,7 @@ export const {
     selectIsAnyActionLoading 
 } = createViewStateFeature<string>()
 ```
-2. Provide the `viewStateFeature` and `ViewStateEffect` in the root
+#### 2. Provide the `viewStateFeature` and `ViewStateEffect` in the root
 
 ``` typescript
 // app.config.ts
@@ -55,7 +56,7 @@ export const appConfig: ApplicationConfig = {
 	]
 };
 ```
-3. Register actions in your effect to mark them as view state actions
+#### 3. Register actions in your effect to mark them as view state actions
 
 ``` typescript
 // todos.effects.ts
@@ -82,7 +83,7 @@ constructor(private actions$: Actions, private viewStateActionsService: ViewStat
     }
 }
 ```
-4. Create view state selectors
+#### 4. Create view state selectors
 
 ``` typescript
 // todos.selectors.ts
@@ -98,7 +99,7 @@ export const selectIsTodosActionLoading = selectIsAnyActionLoading(TodosActions.
 
 ```
 
-5. Make use of previously created selectors and dispatch the load action.
+#### 5. Make use of previously created selectors and dispatch the load action.
     
 ``` typescript
 // todos.component.ts
@@ -264,7 +265,7 @@ Where `E` generic is the type of the error state.
 Returns an object with the following properties:
 - `initialState` - Initial state of the view state feature.
 - `viewStatesFeatureName` - Name of the view state feature.
-- `viewStatesFeature` - Ngrx feature that holds the view state of the actions.
+- `viewStatesFeature` - NgRx feature that holds the view state of the actions.
 
 ### Selectors:
 - `selectViewStateEntities` - returns the view state entities.

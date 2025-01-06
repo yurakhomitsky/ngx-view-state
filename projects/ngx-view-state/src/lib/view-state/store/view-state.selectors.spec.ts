@@ -37,6 +37,35 @@ describe('ViewStateSelectors', () => {
 
       expect(selector.projector(dataStatuses)).toEqual(idleViewStatus());
     });
+
+    it('should return the same view status reference if the type is the same', () => {
+      const action: Action = {
+        type: 'update',
+      };
+
+      const initialViewStatus: ViewState<string> = {
+          actionType: action.type,
+          viewStatus: idleViewStatus(),
+        };
+
+      const stateDictionary: Dictionary<ViewState<string>> = {
+        [action.type]: initialViewStatus
+      };
+
+      const selector = selectActionViewStatus(action);
+
+      const viewStatus = selector.projector(stateDictionary);
+      const viewStatusNewReference = selector.projector({
+        ...stateDictionary,
+        [action.type]: {
+          ...initialViewStatus,
+          viewStatus: idleViewStatus()
+        }
+      });
+
+
+      expect(viewStatusNewReference).toBe(viewStatus);
+    })
   });
 
   describe('selectIsAnyActionsLoading', () => {

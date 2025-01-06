@@ -1,5 +1,11 @@
 ## Changelog
 
+## 3.2.1
+
+General changes:
+- Add custom memo for `selectActionViewStatus` and `selectViewState` selectors to avoid emitting the same view status multiple times
+- Update README.md
+
 ## 3.0.0
 
 General changes:

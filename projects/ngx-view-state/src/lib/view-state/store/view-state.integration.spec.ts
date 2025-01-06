@@ -11,6 +11,8 @@ import { ViewStateActionsService } from '../services/view-state-actions.service'
 import { ViewStateActions } from './view-state.actions';
 import { ViewStateEffects } from './view-state.effects';
 import { createViewStateFeature } from './view-state.feature';
+import { ViewStatus } from '../models/view-status.model';
+import { idleViewStatus, loadingViewStatus } from '../factories';
 
 describe('ViewStateIntegration', () => {
   let store: Store;
@@ -18,7 +20,7 @@ describe('ViewStateIntegration', () => {
 	const loadFailError = 'Failed to Load Data';
 	const addFailError = 'Failed to Add Data';
 
-  const { viewStatesFeature } = createViewStateFeature<string>()
+  const { viewStatesFeature, selectActionViewStatus } = createViewStateFeature<string>()
 
   const apiService = {
     getData: () => of<string[]>([]),
@@ -35,6 +37,12 @@ describe('ViewStateIntegration', () => {
       addData: props<{ data: string }>(),
       addDataSuccess: props<{ data: string }>(),
       addDataFailure: props<ViewStateErrorProps>(),
+
+			loadBooks: emptyProps(),
+			loadBooksSuccess: emptyProps(),
+
+			saveBook: emptyProps(),
+			saveBookSuccess: emptyProps(),
     },
   });
 
@@ -57,7 +65,17 @@ describe('ViewStateIntegration', () => {
           startLoadingOn: DataActions.addData,
           resetOn: [DataActions.addDataSuccess],
           errorOn: [DataActions.addDataFailure],
-        }
+        },
+				{
+					startLoadingOn: DataActions.loadBooks,
+					resetOn: [DataActions.loadBooksSuccess],
+					errorOn: [],
+				},
+				{
+					startLoadingOn: DataActions.saveBook,
+					resetOn: [DataActions.saveBookSuccess],
+					errorOn: [],
+				}
       ]);
     }
 
@@ -330,5 +348,23 @@ describe('ViewStateIntegration', () => {
 			store.dispatch(DataActions.loadData());
 			store.dispatch(DataActions.addData({ data: 'Add Hello Oops' }));
 		})
-	})
+	});
+
+	describe('Select ViewState', () => {
+		it('should only emit unique ViewStatusModel', () => {
+			const viewStatuses: ViewStatus[] = [];
+
+			store.select(selectActionViewStatus(DataActions.loadBooks)).subscribe((viewStatus) => {
+				viewStatuses.push(viewStatus);
+			});
+
+			store.dispatch(DataActions.loadBooks());
+			store.dispatch(DataActions.loadBooksSuccess());
+
+			store.dispatch(DataActions.saveBook());
+			store.dispatch(DataActions.saveBookSuccess());
+
+			expect(viewStatuses).toEqual([idleViewStatus(), loadingViewStatus(), idleViewStatus()]);
+		});
+	});
 });

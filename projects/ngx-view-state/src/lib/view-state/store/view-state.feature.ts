@@ -4,9 +4,11 @@ import {
 	createFeature,
 	createReducer,
 	createSelector,
+	createSelectorFactory,
 	DefaultProjectorFn,
 	MemoizedSelector,
-	on
+	on,
+	resultMemoize
 } from '@ngrx/store';
 
 import { errorViewStatus, idleViewStatus, loadingViewStatus } from '../factories';
@@ -64,13 +66,25 @@ export function createViewStateFeature<E>() {
 
 
 			function selectActionViewStatus(action: Action): MemoizedSelector<object, ViewStatus<E>, DefaultProjectorFn<ViewStatus<E>>> {
-				return createSelector(selectEntities, (actionsMap: Dictionary<ViewState<E>>): ViewStatus<E> => {
+				const customViewStateSelectorMemo = createSelectorFactory<object, ViewStatus<E>>((projector) => {
+					return resultMemoize(projector, (a: ViewStatus, b: ViewStatus): boolean => {
+						return a.type === b.type;
+					});
+				});
+
+				return customViewStateSelectorMemo(selectEntities, (actionsMap: Dictionary<ViewState<E>>): ViewStatus<E> => {
 					return (actionsMap[action.type]?.viewStatus as ViewStatus<E>) ?? idleViewStatus();
 				});
 			}
 
 			function selectViewState(action: Action): MemoizedSelector<object, ViewState<E>, DefaultProjectorFn<ViewState<E>>> {
-				return createSelector(selectEntities, (actionsMap: Dictionary<ViewState<E>>): ViewState<E> => {
+				const customViewStateSelectorMemo = createSelectorFactory<object, ViewState<E>>((projector) => {
+					return resultMemoize(projector, (a: ViewState<E>, b: ViewState<E>): boolean => {
+						return a.viewStatus.type === b.viewStatus.type;
+					});
+				});
+
+				return customViewStateSelectorMemo(selectEntities, (actionsMap: Dictionary<ViewState<E>>): ViewState<E> => {
 						return actionsMap[action.type] ?? { actionType: action.type, viewStatus: idleViewStatus() };
 					}
 				);
@@ -112,7 +126,7 @@ export function createViewStateFeature<E>() {
 		selectIsAnyActionLoading,
 		selectIsAnyActionLoaded,
 		selectIsAnyActionError,
-		selectIsAnyActionIdle,
+		selectIsAnyActionIdle
 	};
 }
 

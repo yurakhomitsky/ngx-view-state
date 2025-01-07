@@ -11,10 +11,10 @@ describe('TodosComponent', () => {
       imports: [TodosComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(TodosComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

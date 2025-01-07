@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, provideExperimentalZonelessChangeDetection, signal, Signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -7,7 +7,7 @@ import { Subject } from 'rxjs';
 
 import { ErrorStateComponent, LoadingStateComponent } from './components';
 import { ViewStatusEnum } from './models/view-status.enum';
-import {  errorViewStatus, idleViewStatus, loadedViewStatus, loadingViewStatus } from './factories';
+import { errorViewStatus, idleViewStatus, loadedViewStatus, loadingViewStatus } from './factories';
 import { ViewStatus } from './models/view-status.model';
 import { ViewStateDirective } from './view-state.directive';
 import { ComponentViewModel } from './models/component-view-model.model';
@@ -25,44 +25,48 @@ describe('ViewStateDirective', () => {
       imports: [ViewStateDirective, AsyncPipe],
     })
     class TestViewStatusHostComponent {
-      public viewStatus: ViewStatus | null = null;
-      public viewStatusSubject$ = new Subject<ViewStatus>();
+      private viewStatus$ = signal<ViewStatus | null>(null);
+      public viewStatusSubject$ = new Subject<ViewStatus | null>();
 
-      setViewStatus(status: ViewStatus): void {
-        this.viewStatus = status;
+      public get viewStatus(): ViewStatus | null {
+        return this.viewStatus$()
+      }
+
+      setViewStatus(status: ViewStatus | null): void {
+        this.viewStatus$.set(status)
         this.viewStatusSubject$.next(status);
       }
     }
 
     let fixture: ComponentFixture<TestViewStatusHostComponent>;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       TestBed.configureTestingModule({
         imports: [TestViewStatusHostComponent, NoopAnimationsModule],
+        providers: [provideExperimentalZonelessChangeDetection()]
       });
       fixture = TestBed.createComponent(TestViewStatusHostComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
     });
 
-    it('should not display the Content if viewStatus is null', () => {
-      fixture.componentInstance.viewStatus = null;
-      fixture.detectChanges();
+    it('should not display the Content if viewStatus is null', async () => {
+      fixture.componentInstance.setViewStatus(null)
+      await fixture.whenStable();
 
       expect(fixture.debugElement.query(By.css('.static-content'))).toBeFalsy();
       expect(fixture.debugElement.query(By.css('.async-content'))).toBeFalsy();
     });
 
-    it('should not display the Content for [ERROR, LOADING, EMPTY]', () => {
+    it('should not display the Content for [ERROR, LOADING, EMPTY]', async () => {
       fixture.componentInstance.setViewStatus(errorViewStatus());
-
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.debugElement.query(By.css('.static-content'))).toBeFalsy();
       expect(fixture.debugElement.query(By.css('.async-content'))).toBeFalsy();
 
       fixture.componentInstance.setViewStatus(loadingViewStatus());
 
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.debugElement.query(By.css('.static-content'))).toBeFalsy();
       expect(fixture.debugElement.query(By.css('.async-content'))).toBeFalsy();
@@ -70,9 +74,9 @@ describe('ViewStateDirective', () => {
     });
 
     describe('Directive Context', () => {
-      it('should display value from the directive context', () => {
+      it('should display value from the directive context', async () => {
         fixture.componentInstance.setViewStatus(loadedViewStatus());
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         expect(fixture.debugElement.query(By.css('.static-content')).nativeElement.textContent).toContain(
           `Content static ${ViewStatusEnum.LOADED}`,
@@ -84,9 +88,9 @@ describe('ViewStateDirective', () => {
     });
 
     describe('Idle', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         fixture.componentInstance.setViewStatus(idleViewStatus());
-        fixture.detectChanges();
+        await fixture.whenStable();
       });
 
       it('should display static content', () => {
@@ -99,25 +103,26 @@ describe('ViewStateDirective', () => {
     });
 
     describe('Loading', () => {
-      it('should display the Loading State Component if viewStatus is null', () => {
-        fixture.componentInstance.viewStatus = null;
-        fixture.detectChanges();
+      it('should display the Loading State Component if viewStatus is null', async () => {
+        fixture.componentInstance.setViewStatus(null)
+        await fixture.whenStable();
+
 
         expect(fixture.debugElement.queryAll(By.directive(LoadingStateComponent)).length).toBe(2);
       });
 
-      it('should Loading State Component', () => {
+      it('should Loading State Component', async () => {
         fixture.componentInstance.setViewStatus(loadingViewStatus());
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         expect(fixture.debugElement.queryAll(By.directive(LoadingStateComponent)).length).toBe(2)
       });
     });
 
     describe('Loaded', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         fixture.componentInstance.setViewStatus(loadedViewStatus());
-        fixture.detectChanges();
+        await fixture.whenStable();
       });
 
       it('should display static content', () => {
@@ -131,10 +136,9 @@ describe('ViewStateDirective', () => {
     });
 
     describe('Error', () => {
-      it('should display the Error State Component', () => {
+      it('should display the Error State Component', async () => {
         fixture.componentInstance.setViewStatus(errorViewStatus('Something went wrong'));
-
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         expect(fixture.debugElement.queryAll(By.directive(ErrorStateComponent)).length).toBe(2)
         expect(fixture.debugElement.query(By.css('h2')).nativeElement.textContent).toContain('Something went wrong');
@@ -151,20 +155,31 @@ describe('ViewStateDirective', () => {
       imports: [ViewStateDirective],
     })
     class TestViewModelHostComponent {
-      public viewModel: ComponentViewModel<string> = {
+      private _viewModel = signal<ComponentViewModel<string>>({
         viewStatus: loadedViewStatus(),
         data: 'Hello World',
-      };
+      })
+
+      public set viewModel(viewModel: ComponentViewModel<string>) {
+        this._viewModel.set(viewModel)
+      }
+
+      public get viewModel(): ComponentViewModel<string> {
+        return this._viewModel()
+      }
+
+
     }
 
     let fixture: ComponentFixture<TestViewModelHostComponent>;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       TestBed.configureTestingModule({
         imports: [TestViewModelHostComponent, NoopAnimationsModule],
+        providers: [provideExperimentalZonelessChangeDetection()]
       });
       fixture = TestBed.createComponent(TestViewModelHostComponent);
-      fixture.detectChanges();
+      await fixture.whenStable()
     });
 
     describe('Directive Context', () => {
@@ -182,46 +197,47 @@ describe('ViewStateDirective', () => {
     });
 
     describe('Idle', () => {
-      it('should display  content', () => {
+      it('should display  content', async () => {
         fixture.componentInstance.viewModel = {
           viewStatus: idleViewStatus(),
           data: 'Hello World',
         };
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         expect(fixture.debugElement.query(By.css('.viewModel-content'))).toBeTruthy();
       });
     });
 
     describe('Loading', () => {
-      it('should Loading State Component', () => {
+      it('should Loading State Component', async () => {
         fixture.componentInstance.viewModel = {
           viewStatus: loadingViewStatus(),
         };
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         expect(fixture.debugElement.queryAll(By.directive(LoadingStateComponent)).length).toBe(1);
       });
     });
 
     describe('Loaded', () => {
-      it('should display content', () => {
+      it('should display content', async () => {
         fixture.componentInstance.viewModel = {
           viewStatus: loadedViewStatus(),
           data: 'Hello World',
         };
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         expect(fixture.debugElement.query(By.css('.viewModel-content'))).toBeTruthy();
       });
     });
 
     describe('Error', () => {
-      it('should display the Error State Component', () => {
+      it('should display the Error State Component', async () => {
         fixture.componentInstance.viewModel = {
           viewStatus: errorViewStatus(),
         };
-        fixture.detectChanges();
+
+        await fixture.whenStable();
 
         expect(fixture.debugElement.queryAll(By.directive(ErrorStateComponent)).length).toBe(1);
       });

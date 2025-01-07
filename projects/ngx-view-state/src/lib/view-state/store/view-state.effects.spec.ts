@@ -8,6 +8,7 @@ import { ViewStateActionsService } from '../services/view-state-actions.service'
 
 import { ViewStateActions } from './view-state.actions';
 import { ViewStateEffects } from './view-state.effects';
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 
 describe('ViewStateEffects', () => {
   let actions$: ReplaySubject<Action>;
@@ -30,6 +31,7 @@ describe('ViewStateEffects', () => {
         ViewStateEffects,
         provideMockActions(() => actions$),
         { provide: ViewStateActionsService, useValue: viewStateActionsServiceSpy },
+        provideExperimentalZonelessChangeDetection()
       ],
     });
 

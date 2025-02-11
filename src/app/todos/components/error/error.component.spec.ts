@@ -8,13 +8,13 @@ describe('ErrorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ErrorComponent]
+      imports: [ErrorComponent],
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(ErrorComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

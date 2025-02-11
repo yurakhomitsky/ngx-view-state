@@ -115,7 +115,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     this.viewContext.ngxViewState = viewModel.value as ViewContextValue<T>;
 
     this.viewStatusHandlers[viewModel.viewStatus.type](viewModel as never);
-    this.cdRef.detectChanges();
+    this.cdRef.markForCheck();
   }
 
   private createContent(): void {

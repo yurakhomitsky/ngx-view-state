@@ -3,18 +3,20 @@ import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { By } from '@angular/platform-browser';
 
 import { ErrorStateComponent } from './error-state.component';
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 
 describe('ErrorStateComponent', () => {
   let component: ErrorStateComponent;
   let fixture: ComponentFixture<ErrorStateComponent>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [ErrorStateComponent, MatIconTestingModule],
+      providers: [provideExperimentalZonelessChangeDetection()]
     });
     fixture = TestBed.createComponent(ErrorStateComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -25,11 +27,11 @@ describe('ErrorStateComponent', () => {
     expect(fixture.debugElement.query(By.css('h2')).nativeElement.textContent).toContain('There is an error displaying this data');
   });
 
-  it('should display custom error text', () => {
+  it('should display custom error text', async () => {
     component.viewStateError = 'Custom error text';
 
     fixture.componentRef.setInput('viewStateError', 'Custom error text');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(fixture.debugElement.query(By.css('h2')).nativeElement.textContent).toContain('Custom error text');
   });

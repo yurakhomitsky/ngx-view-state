@@ -11,10 +11,10 @@ describe('LoadingComponent', () => {
       imports: [LoadingComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(LoadingComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

@@ -183,15 +183,38 @@ describe('ViewStateDirective', () => {
     });
 
     describe('Directive Context', () => {
-      it('should display data from directive context', () => {
+      it('should display data from directive context', async () => {
         fixture.componentInstance.viewModel = {
           viewStatus: loadedViewStatus(),
           data: 'Hello World',
         };
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         expect(fixture.debugElement.query(By.css('.viewModel-content')).nativeElement.textContent).toContain(
           'View Model Content Hello World',
+        );
+      });
+
+      it('should update data from directive context even when the viewStatus is the same', async () => {
+        fixture.componentInstance.viewModel = {
+          viewStatus: loadedViewStatus(),
+          data: 'Hello World',
+        };
+
+        await fixture.whenStable();
+
+        expect(fixture.debugElement.query(By.css('.viewModel-content')).nativeElement.textContent).toContain(
+          'View Model Content Hello World',
+        );
+
+        fixture.componentInstance.viewModel = {
+          viewStatus: loadedViewStatus(),
+          data: 'Hello World 2',
+        };
+        await fixture.whenStable();
+
+        expect(fixture.debugElement.query(By.css('.viewModel-content')).nativeElement.textContent).toContain(
+          'View Model Content Hello World 2',
         );
       });
     });

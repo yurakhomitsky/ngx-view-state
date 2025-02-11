@@ -1,5 +1,12 @@
 ## Changelog
 
+## 4.0.1
+
+General changes:
+
+- Bugfix: Ensure context values update when data changes in ComponentViewModel
+- Update `ViewContextValue` type to resolve the correct viewStatus in ComponentViewModel
+
 ## 4.0.0
 
 General changes:

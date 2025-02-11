@@ -14,4 +14,4 @@ export type ViewStatusHandlers<ViewStatuses extends { type: ViewStatusEnum }, T>
   [ViewStatus in ViewStatuses as ViewStatus['type']]: (event: { viewStatus: ViewStatus; value: T }) => void;
 };
 
-export type ViewContextValue<T> = T extends ViewStatus ? ViewLoaded : T;
+export type ViewContextValue<T> = T extends ViewStatus ? ViewLoaded : T extends ComponentViewModel<infer U> ? { data: U, viewStatus: ViewLoaded } : T;

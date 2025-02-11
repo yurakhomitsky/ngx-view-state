@@ -37,6 +37,11 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     return true;
   }
 
+  private readonly viewContext: ViewStateContext<T | undefined> = {
+    $implicit: undefined,
+    ngxViewState: undefined,
+  };
+
   private _viewState!: T;
   private _viewStatus: ViewStatus | null = null;
 
@@ -52,6 +57,8 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     this._viewState = value;
 
     const viewStatus: ViewStatus = 'type' in value ? value : value.viewStatus;
+
+    this.updateContext(value);
 
     if (this._viewStatus?.type === viewStatus.type) {
       return;
@@ -75,11 +82,6 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
 
   public readonly ngxViewStateEmpty = input<TemplateRef<ViewStateContext<T>>>();
 
-  private readonly viewContext: ViewStateContext<T | undefined> = {
-    $implicit: undefined,
-    ngxViewState: undefined,
-  };
-
   private viewStatusHandlers: ViewStatusHandlers<ViewStatus, T> = {
     [ViewStatusEnum.IDLE]: () => {
       this.createContent();
@@ -97,7 +99,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
 
   constructor(
     private viewContainerRef: ViewContainerRef,
-    private templateRef: TemplateRef<ViewStateContext<T>>,
+    private templateRef: TemplateRef<ViewStateContext<T | undefined>>,
     private cdRef: ChangeDetectorRef,
     @Inject(ERROR_STATE_COMPONENT)
     private errorStateComponent: Type<ViewStateErrorComponent<unknown>>,
@@ -111,11 +113,14 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
 
   private onViewStateChange(viewModel: { viewStatus: ViewStatus; value: T }): void {
     this.viewContainerRef.clear();
-    this.viewContext.$implicit = viewModel.value as ViewContextValue<T>;
-    this.viewContext.ngxViewState = viewModel.value as ViewContextValue<T>;
 
     this.viewStatusHandlers[viewModel.viewStatus.type](viewModel as never);
     this.cdRef.markForCheck();
+  }
+
+  private updateContext(value: T): void {
+    this.viewContext.$implicit = value as unknown as ViewContextValue<T>;
+    this.viewContext.ngxViewState = value as unknown as ViewContextValue<T>;
   }
 
   private createContent(): void {

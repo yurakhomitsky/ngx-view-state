@@ -9,7 +9,7 @@
     "build-lib": "ng build ngx-view-state",
     "build-lib-watch": "ng build ngx-view-state --watch",
     "test": "ng test",
-    "test-lib": "ng test ngx-view-state"
+    "test-lib": "ng test ngx-view-state --browsers=ChromeHeadless"
   },
   "private": true,
   "dependencies": {

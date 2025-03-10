@@ -114,7 +114,8 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/ngx-view-state/tsconfig.spec.json",
-            "polyfills": []
+            "polyfills": [],
+            "karmaConfig": "karma.conf.js"
           }
         }
       }

@@ -257,13 +257,18 @@ describe('ViewStateIntegration', () => {
 				done();
 			});
 
+			jasmine.clock().install();
+
 			spyOn(apiService, 'getData').and.returnValue(of(['Hello', 'World']).pipe(
-				observeOn(asyncScheduler, 1000)
+				observeOn(asyncScheduler)
 			));
 
 
 			store.dispatch(DataActions.loadData());
 			store.dispatch(DataActions.addData({ data: 'Add Hello' }));
+
+			jasmine.clock().tick(1);
+			jasmine.clock().uninstall();
 		});
 
 		it('should error loadData action after addData action', (done) => {
@@ -294,13 +299,19 @@ describe('ViewStateIntegration', () => {
 			});
 
 
+			jasmine.clock().install();
+
 			spyOn(apiService, 'getData').and.returnValue(of(['Hello', 'World']).pipe(
-				observeOn(asyncScheduler, 1000)
+				observeOn(asyncScheduler)
 			));
+
 			spyOn(apiService, 'addData').and.returnValue(throwError(() => new Error('Oops')));
 
 			store.dispatch(DataActions.loadData());
 			store.dispatch(DataActions.addData({ data: 'Add Hello Oops' }));
+
+			jasmine.clock().tick(1);
+			jasmine.clock().uninstall();
 		});
 	});
 

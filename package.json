@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --stats-json",
     "watch": "ng build --watch --configuration development",
     "build-lib": "ng build ngx-view-state",
     "build-lib-watch": "ng build ngx-view-state --watch",

@@ -1,8 +1,8 @@
 import { Injectable, provideExperimentalZonelessChangeDetection } from '@angular/core';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Actions, createEffect, EffectsModule, ofType } from '@ngrx/effects';
 import { Action, createActionGroup, emptyProps, props, Store, StoreModule } from '@ngrx/store';
-import { asyncScheduler, catchError, observeOn, of, switchMap, throwError } from 'rxjs';
+import { asyncScheduler, catchError, observeOn, of, Subject, switchMap, takeUntil, throwError } from 'rxjs';
 import { map, take, toArray } from 'rxjs/operators';
 
 import { ViewStateErrorProps } from '../models/view-state-props.model';
@@ -12,7 +12,7 @@ import { ViewStateActions } from './view-state.actions';
 import { ViewStateEffects } from './view-state.effects';
 import { createViewStateFeature } from './view-state.feature';
 import { ViewStatus } from '../models/view-status.model';
-import { idleViewStatus, loadingViewStatus } from '../factories';
+import { errorViewStatus, idleViewStatus, loadingViewStatus } from '../factories';
 
 describe('ViewStateIntegration', () => {
 	let store: Store;
@@ -40,6 +40,7 @@ describe('ViewStateIntegration', () => {
 
 			loadBooks: emptyProps(),
 			loadBooksSuccess: emptyProps(),
+			loadBooksFailure: props<ViewStateErrorProps<{ message: string }>>(),
 
 			saveBook: emptyProps(),
 			saveBookSuccess: emptyProps()
@@ -69,7 +70,7 @@ describe('ViewStateIntegration', () => {
 				{
 					startLoadingOn: DataActions.loadBooks,
 					resetOn: [DataActions.loadBooksSuccess],
-					errorOn: []
+					errorOn: [DataActions.loadBooksFailure]
 				},
 				{
 					startLoadingOn: DataActions.saveBook,
@@ -376,20 +377,51 @@ describe('ViewStateIntegration', () => {
 	});
 
 	describe('Select ViewState', () => {
-		it('should only emit unique ViewStatusModel', () => {
-			const viewStatuses: ViewStatus[] = [];
+		let viewStatuses: ViewStatus[];
+		let subject: Subject<void>
 
-			store.select(selectActionViewStatus(DataActions.loadBooks)).subscribe((viewStatus) => {
+		beforeEach(() => {
+			viewStatuses = [];
+			subject = new Subject();
+			store.select(selectActionViewStatus(DataActions.loadBooks)).pipe(
+				takeUntil(subject)
+			).subscribe((viewStatus) => {
 				viewStatuses.push(viewStatus);
 			});
+		});
 
+		afterEach(() => {
+			subject.next();
+			subject.complete();
+		});
+
+		it('should not trigger selector when dispatch actions not related to one we listen', () => {
 			store.dispatch(DataActions.loadBooks());
 			store.dispatch(DataActions.loadBooksSuccess());
 
 			store.dispatch(DataActions.saveBook());
 			store.dispatch(DataActions.saveBookSuccess());
+			store.dispatch(DataActions.saveBookSuccess());
 
 			expect(viewStatuses).toEqual([idleViewStatus(), loadingViewStatus(), idleViewStatus()]);
 		});
+
+		it('should not emit duplicated view status', () => {
+			store.dispatch(DataActions.loadBooks());
+			store.dispatch(DataActions.loadBooks());
+			store.dispatch(DataActions.loadBooks());
+			store.dispatch(DataActions.loadBooksSuccess());
+
+
+			expect(viewStatuses).toEqual([idleViewStatus(), loadingViewStatus(), idleViewStatus()]);
+		})
+
+		it('should emit error view status when if error object changes', () => {
+			store.dispatch(DataActions.loadBooksFailure({ viewStateError: { message: 'Error-1' } }));
+			store.dispatch(DataActions.loadBooksFailure({ viewStateError: { message: 'Error-1' } }));
+			store.dispatch(DataActions.loadBooksFailure({ viewStateError: { message: 'Error-2' } }));
+
+			expect(viewStatuses).toEqual([idleViewStatus(), errorViewStatus({ message: 'Error-1' }), errorViewStatus({ message: 'Error-1' }), errorViewStatus({ message: 'Error-2'})]);
+		})
 	});
 });

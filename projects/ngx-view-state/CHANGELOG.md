@@ -1,5 +1,15 @@
 ## Changelog
 
+## 4.1.0
+
+General changes:
+- Refactor internal state management to remove dependency on `@ngrx/entity` adapter.
+- Replace entity adapter methods with custom adapter functions (`upsertOne`, `upsertMany`, `removeOne`, `removeMany`).
+- Remove `ids` array from state, relying directly on `entities` dictionary for managing action state.
+- Update tests to reflect removal of `ids` and verify new selectors.
+
+No breaking changes to the public API selectors — backward compatible.
+
 ## 4.0.1
 
 General changes:

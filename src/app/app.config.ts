@@ -19,7 +19,7 @@ export const appConfig: ApplicationConfig = {
 	providers: [
 		provideRouter(routes),
 		provideHttpClient(),
-		provideStore({}),
+		provideStore({}, { runtimeChecks: { strictStateImmutability: true, strictActionImmutability: true} }),
 		provideState(viewStatesFeature),
 		provideState(todosFeature),
 		provideEffects(ViewStateEffects, TodosEffects),

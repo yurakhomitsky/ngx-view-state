@@ -20,7 +20,6 @@ describe('ViewStateFeature', () => {
           viewStatus: loadingViewStatus(),
         },
       },
-      ids: ['123'],
     });
   });
 
@@ -33,7 +32,6 @@ describe('ViewStateFeature', () => {
             viewStatus: loadingViewStatus(),
           },
         },
-        ids: ['123'],
       },
       ViewStateActions.reset({
         actionType: '123',
@@ -42,7 +40,6 @@ describe('ViewStateFeature', () => {
 
     expect(state).toEqual({
       entities: {},
-      ids: [],
     });
   });
 
@@ -50,7 +47,6 @@ describe('ViewStateFeature', () => {
     const state = viewStatesFeature.reducer(
       {
         entities: {},
-        ids: [],
       },
       ViewStateActions.error({
         actionType: '123',
@@ -65,7 +61,6 @@ describe('ViewStateFeature', () => {
           viewStatus: errorViewStatus('Custom error message'),
         },
       },
-      ids: ['123'],
     });
   });
 
@@ -73,7 +68,6 @@ describe('ViewStateFeature', () => {
     const state = viewStatesFeature.reducer(
       {
         entities: {},
-        ids: [],
       },
       ViewStateActions.errorMany({
         actionTypes: [
@@ -94,7 +88,6 @@ describe('ViewStateFeature', () => {
           viewStatus: errorViewStatus('Custom error message 2'),
         },
       },
-      ids: ['123', '456'],
     });
   });
 
@@ -111,7 +104,6 @@ describe('ViewStateFeature', () => {
             viewStatus: loadingViewStatus(),
           },
         },
-        ids: ['123', '456'],
       },
       ViewStateActions.resetMany({
         actionTypes: ['123', '456'],
@@ -120,7 +112,6 @@ describe('ViewStateFeature', () => {
 
     expect(state).toEqual({
       entities: {},
-      ids: [],
     });
   })
 });

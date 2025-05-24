@@ -1,4 +1,3 @@
-import { createEntityAdapter, Dictionary, EntityAdapter } from '@ngrx/entity';
 import {
 	Action,
 	createFeature,
@@ -16,6 +15,7 @@ import { ViewStatus } from '../models/view-status.model';
 
 import { ViewStateActions } from './view-state.actions';
 import { ViewStatusEnum } from '../models/view-status.enum';
+import { Dictionary, EntityState, removeMany, removeOne, upsertMany, upsertOne } from './view-state.adapter';
 
 export interface ViewState<E> {
 	actionType: string;
@@ -25,22 +25,20 @@ export interface ViewState<E> {
 export function createViewStateFeature<E>() {
 	const viewStatesFeatureName = 'viewStates';
 
-	const adapter: EntityAdapter<ViewState<E>> = createEntityAdapter<ViewState<E>>({
-		selectId: (viewState: ViewState<E>) => viewState.actionType
-	});
-
-	const initialState = adapter.getInitialState({});
+	const initialState: EntityState<ViewState<E>> = {
+		entities: {}
+	};
 
 	const reducer = createReducer(
 		initialState,
 		on(ViewStateActions.startLoading, (state, { actionType }) => {
-			return adapter.upsertOne({ actionType, viewStatus: loadingViewStatus() }, state);
+			return upsertOne({ actionType, viewStatus: loadingViewStatus() }, state);
 		}),
 		on(ViewStateActions.error, (state, { actionType, error }) => {
-			return adapter.upsertOne({ actionType, viewStatus: errorViewStatus<E>(error as E) }, state);
+			return upsertOne({ actionType, viewStatus: errorViewStatus<E>(error as E) }, state);
 		}),
 		on(ViewStateActions.errorMany, (state, { actionTypes }) => {
-			return adapter.upsertMany(actionTypes.map(({ actionType, error }) => {
+			return upsertMany(actionTypes.map(({ actionType, error }) => {
 				return {
 					actionType,
 					viewStatus: errorViewStatus<E>(error as E)
@@ -48,17 +46,17 @@ export function createViewStateFeature<E>() {
 			}), state);
 		}),
 		on(ViewStateActions.reset, (state, { actionType }) => {
-			return adapter.removeOne(actionType, state);
+			return removeOne(actionType, state);
 		}),
 		on(ViewStateActions.resetMany, (state, { actionTypes }) => {
-			return adapter.removeMany(actionTypes, state);
+			return removeMany(actionTypes, state);
 		})
 	);
 
 	const viewStatesFeature = createFeature({
 		name: viewStatesFeatureName,
 		reducer,
-		extraSelectors: ({ selectViewStatesState, selectEntities }) => {
+		extraSelectors: ({ selectEntities }) => {
 			const selectIsAnyActionLoading = createSelectorForActionStatus(selectEntities, ViewStatusEnum.LOADING);
 			const selectIsAnyActionError = createSelectorForActionStatus(selectEntities, ViewStatusEnum.ERROR);
 			const selectIsAnyActionLoaded = createSelectorForActionStatus(selectEntities, ViewStatusEnum.LOADED);
@@ -90,14 +88,19 @@ export function createViewStateFeature<E>() {
 				);
 			}
 
+			const selectAll = createSelector(selectEntities, (entities) => Object.values(entities));
+
+			const selectIds = createSelector(selectAll, (entities) => entities.map(entity => entity.actionType));
+
 			return {
-				...adapter.getSelectors(selectViewStatesState),
 				selectIsAnyActionLoading,
 				selectIsAnyActionError,
 				selectIsAnyActionLoaded,
 				selectIsAnyActionIdle,
 				selectActionViewStatus,
-				selectViewState
+				selectViewState,
+				selectAll,
+				selectIds
 			};
 		}
 	});

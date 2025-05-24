@@ -1,12 +1,12 @@
-import { Dictionary } from '@ngrx/entity';
 import { Action } from '@ngrx/store';
 
 import { errorViewStatus, idleViewStatus, loadedViewStatus, loadingViewStatus } from '../factories';
 
 import { createViewStateFeature, ViewState } from './view-state.feature';
+import { Dictionary } from './view-state.adapter';
 
 describe('ViewStateSelectors', () => {
-  const { selectIsAnyActionLoading, selectIsAnyActionLoaded, selectIsAnyActionError, selectIsAnyActionIdle, selectActionViewStatus } = createViewStateFeature<string>();
+  const { selectIsAnyActionLoading, selectIsAnyActionLoaded, selectIsAnyActionError, selectIsAnyActionIdle, selectActionViewStatus, selectAllViewState, selectViewStateActionTypes } = createViewStateFeature<string>();
 
   describe('selectActionViewStatus', () => {
     it('should select action status', () => {
@@ -222,5 +222,68 @@ describe('ViewStateSelectors', () => {
 
       expect(selector.projector(stateDictionary)).toEqual(false);
     });
+  })
+
+  describe('selectAll', () => {
+    it('should return all actions', () => {
+      const getDataAction: Action = {
+        type: 'get data',
+      };
+
+      const getAdditionalDataAction: Action = {
+        type: 'get additional data',
+      };
+
+      const stateDictionary: Dictionary<ViewState<string>> = {
+        [getDataAction.type]: {
+          actionType: getDataAction.type,
+          viewStatus: loadingViewStatus(),
+        },
+        [getAdditionalDataAction.type]: {
+          actionType: getAdditionalDataAction.type,
+          viewStatus: loadedViewStatus(),
+        }
+      }
+
+
+      expect(selectAllViewState.projector(stateDictionary)).toEqual([
+        {
+          actionType: getDataAction.type,
+          viewStatus: loadingViewStatus(),
+        },
+        {
+          actionType: getAdditionalDataAction.type,
+          viewStatus: loadedViewStatus(),
+        }
+      ]);
+    })
+  })
+
+  describe('selectViewStateActionTypes', () => {
+    it('should return all actions', () => {
+      const getDataAction: Action = {
+        type: 'get data',
+      };
+
+      const getAdditionalDataAction: Action = {
+        type: 'get additional data',
+      };
+
+      const stateDictionary: Dictionary<ViewState<string>> = {
+        [getDataAction.type]: {
+          actionType: getDataAction.type,
+          viewStatus: loadingViewStatus(),
+        },
+        [getAdditionalDataAction.type]: {
+          actionType: getAdditionalDataAction.type,
+          viewStatus: loadedViewStatus(),
+        }
+      }
+
+      expect(selectViewStateActionTypes.projector(Object.values(stateDictionary))).toEqual([
+        getDataAction.type,
+        getAdditionalDataAction.type
+      ]);
+    })
   })
 });

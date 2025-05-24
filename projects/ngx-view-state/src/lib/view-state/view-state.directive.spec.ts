@@ -26,7 +26,7 @@ describe('ViewStateDirective', () => {
     })
     class TestViewStatusHostComponent {
       private viewStatus$ = signal<ViewStatus | null>(null);
-      public viewStatusSubject$ = new Subject<ViewStatus | null>();
+      public viewStatusSubject$: Subject<ViewStatus | null> = new Subject<ViewStatus | null>();
 
       public get viewStatus(): ViewStatus | null {
         return this.viewStatus$()

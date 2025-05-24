@@ -1,5 +1,13 @@
 ## Changelog
 
+## 4.1.1
+General changes:
+- Refactor: Extract reducers, selectors, and models into separate files for better code organization.
+- Fix: Remove custom selector memoization that prevented selectors from emitting on state changes when ErrorViewState updates with different error object/message.
+- Optimize adapter functions (`upsertMany`, `removeMany`) to avoid unnecessary state updates for unchanged entities.
+- Improve selector memoization to ensure selectors only emit on actual state changes.
+
+
 ## 4.1.0
 
 General changes:
@@ -53,7 +61,7 @@ General changes:
 
 ## 2.1.0
 
-- fix: If the same action was included in multiple `ViewStateActionsConfig` configs, only last action config would be used. The store, effects and service now correctly handles multiple actions across different configs.
+- fix: If the same action was included in multiple `ViewStateActionsConfig` configs, only last action config would be used. The store, effects, and service now correctly handles multiple actions across different configs.
 
 ## 2.0.0    
 

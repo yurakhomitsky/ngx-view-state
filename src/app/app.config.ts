@@ -16,16 +16,17 @@ import { ErrorComponent } from './todos/components/error/error.component';
 export const routes: Routes = [];
 
 export const appConfig: ApplicationConfig = {
-	providers: [
-		provideRouter(routes),
-		provideHttpClient(),
-		provideStore({}, { runtimeChecks: { strictStateImmutability: true, strictActionImmutability: true} }),
-		provideState(viewStatesFeature),
-		provideState(todosFeature),
-		provideEffects(ViewStateEffects, TodosEffects),
-		provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }), provideAnimationsAsync(),
-		provideLoadingStateComponent(LoadingComponent),
-		provideErrorStateComponent(ErrorComponent),
-		provideExperimentalZonelessChangeDetection()
-	]
+  providers: [
+    provideRouter(routes),
+    provideHttpClient(),
+    provideStore({}, { runtimeChecks: { strictStateImmutability: true, strictActionImmutability: true } }),
+    provideState(viewStatesFeature),
+    provideState(todosFeature),
+    provideEffects(ViewStateEffects, TodosEffects),
+    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+    provideAnimationsAsync(),
+    provideLoadingStateComponent(LoadingComponent),
+    provideErrorStateComponent(ErrorComponent),
+    provideExperimentalZonelessChangeDetection(),
+  ],
 };

@@ -19,16 +19,16 @@ export const deleteTodoSuccess = createAction('[Todo] Delete Todo Success', prop
 export const deleteTodoFailure = createAction('[Todo] Delete Todo Failure', props<ViewStateErrorProps<string>>());
 
 export const TodosActions = {
-	loadTodos,
-	loadTodosSuccess,
-	loadTodosFailure,
-	addTodo,
-	addTodoSuccess,
-	addTodoFailure,
-	updateTodo,
-	updateTodoSuccess,
-	updateTodoFailure,
-	deleteTodo,
-	deleteTodoSuccess,
-	deleteTodoFailure,
-}
+  loadTodos,
+  loadTodosSuccess,
+  loadTodosFailure,
+  addTodo,
+  addTodoSuccess,
+  addTodoFailure,
+  updateTodo,
+  updateTodoSuccess,
+  updateTodoFailure,
+  deleteTodo,
+  deleteTodoSuccess,
+  deleteTodoFailure,
+};

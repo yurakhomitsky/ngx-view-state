@@ -9,7 +9,10 @@
     "build-lib": "ng build ngx-view-state",
     "build-lib-watch": "ng build ngx-view-state --watch",
     "test": "ng test",
-    "test-lib": "ng test ngx-view-state --browsers=ChromeHeadless"
+    "test-lib": "ng test ngx-view-state --browsers=ChromeHeadless",
+    "prepare": "husky",
+    "lint": "eslint --fix \"{src,projects}/**/*.{js,ts}\"",
+    "format": "prettier --write \"{src,projects}/**/*.{js,ts,json,css,scss,md,html}\""
   },
   "private": true,
   "dependencies": {
@@ -35,14 +38,26 @@
     "@angular-devkit/build-angular": "^19.0.6",
     "@angular/cli": "^19.0.6",
     "@angular/compiler-cli": "^19.0.5",
+    "@eslint/js": "^9.28.0",
     "@types/jasmine": "~5.1.0",
+    "eslint": "^9.28.0",
+    "eslint-config-prettier": "^10.1.5",
+    "globals": "^16.2.0",
+    "husky": "^9.1.7",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "lint-staged": "^16.1.0",
     "ng-packagr": "^19.0.1",
-    "typescript": "~5.6.3"
+    "prettier": "3.5.3",
+    "typescript": "~5.6.3",
+    "typescript-eslint": "^8.33.0"
+  },
+  "lint-staged": {
+    "{src,projects}/**/*.{js,ts}": "eslint --fix",
+    "{src,projects}/**/*": "prettier --write --ignore-unknown"
   }
 }

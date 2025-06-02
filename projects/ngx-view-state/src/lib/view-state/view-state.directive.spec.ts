@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, provideExperimentalZonelessChangeDetection, signal, Signal } from '@angular/core';
+import { Component, provideExperimentalZonelessChangeDetection, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -17,7 +17,9 @@ describe('ViewStateDirective', () => {
     @Component({
       selector: 'app-test-host',
       template: `
-        <div *ngxViewState="viewStatus as viewStatusContext" class="static-content">Content static {{ viewStatusContext.type }}</div>
+        <div *ngxViewState="viewStatus as viewStatusContext" class="static-content">
+          Content static {{ viewStatusContext.type }}
+        </div>
         <div *ngxViewState="viewStatusSubject$ | async as viewStatusContext" class="async-content">
           Content async pipe {{ viewStatusContext.type }}
         </div>
@@ -29,11 +31,11 @@ describe('ViewStateDirective', () => {
       public viewStatusSubject$: Subject<ViewStatus | null> = new Subject<ViewStatus | null>();
 
       public get viewStatus(): ViewStatus | null {
-        return this.viewStatus$()
+        return this.viewStatus$();
       }
 
       setViewStatus(status: ViewStatus | null): void {
-        this.viewStatus$.set(status)
+        this.viewStatus$.set(status);
         this.viewStatusSubject$.next(status);
       }
     }
@@ -43,14 +45,14 @@ describe('ViewStateDirective', () => {
     beforeEach(async () => {
       TestBed.configureTestingModule({
         imports: [TestViewStatusHostComponent, NoopAnimationsModule],
-        providers: [provideExperimentalZonelessChangeDetection()]
+        providers: [provideExperimentalZonelessChangeDetection()],
       });
       fixture = TestBed.createComponent(TestViewStatusHostComponent);
       await fixture.whenStable();
     });
 
     it('should not display the Content if viewStatus is null', async () => {
-      fixture.componentInstance.setViewStatus(null)
+      fixture.componentInstance.setViewStatus(null);
       await fixture.whenStable();
 
       expect(fixture.debugElement.query(By.css('.static-content'))).toBeFalsy();
@@ -70,7 +72,6 @@ describe('ViewStateDirective', () => {
 
       expect(fixture.debugElement.query(By.css('.static-content'))).toBeFalsy();
       expect(fixture.debugElement.query(By.css('.async-content'))).toBeFalsy();
-
     });
 
     describe('Directive Context', () => {
@@ -79,10 +80,10 @@ describe('ViewStateDirective', () => {
         await fixture.whenStable();
 
         expect(fixture.debugElement.query(By.css('.static-content')).nativeElement.textContent).toContain(
-          `Content static ${ViewStatusEnum.LOADED}`,
+          `Content static ${ViewStatusEnum.LOADED}`
         );
         expect(fixture.debugElement.query(By.css('.async-content')).nativeElement.textContent).toContain(
-          `Content async pipe ${ViewStatusEnum.LOADED}`,
+          `Content async pipe ${ViewStatusEnum.LOADED}`
         );
       });
     });
@@ -104,9 +105,8 @@ describe('ViewStateDirective', () => {
 
     describe('Loading', () => {
       it('should display the Loading State Component if viewStatus is null', async () => {
-        fixture.componentInstance.setViewStatus(null)
+        fixture.componentInstance.setViewStatus(null);
         await fixture.whenStable();
-
 
         expect(fixture.debugElement.queryAll(By.directive(LoadingStateComponent)).length).toBe(2);
       });
@@ -115,7 +115,7 @@ describe('ViewStateDirective', () => {
         fixture.componentInstance.setViewStatus(loadingViewStatus());
         await fixture.whenStable();
 
-        expect(fixture.debugElement.queryAll(By.directive(LoadingStateComponent)).length).toBe(2)
+        expect(fixture.debugElement.queryAll(By.directive(LoadingStateComponent)).length).toBe(2);
       });
     });
 
@@ -132,7 +132,6 @@ describe('ViewStateDirective', () => {
       it('should display async content', () => {
         expect(fixture.debugElement.query(By.css('.async-content'))).toBeTruthy();
       });
-
     });
 
     describe('Error', () => {
@@ -140,7 +139,7 @@ describe('ViewStateDirective', () => {
         fixture.componentInstance.setViewStatus(errorViewStatus('Something went wrong'));
         await fixture.whenStable();
 
-        expect(fixture.debugElement.queryAll(By.directive(ErrorStateComponent)).length).toBe(2)
+        expect(fixture.debugElement.queryAll(By.directive(ErrorStateComponent)).length).toBe(2);
         expect(fixture.debugElement.query(By.css('h2')).nativeElement.textContent).toContain('Something went wrong');
       });
     });
@@ -150,7 +149,9 @@ describe('ViewStateDirective', () => {
     @Component({
       selector: 'app-test-host',
       template: `
-        <div *ngxViewState="viewModel as viewModelContext" class="viewModel-content">View Model Content {{ viewModelContext.data }}</div>
+        <div *ngxViewState="viewModel as viewModelContext" class="viewModel-content">
+          View Model Content {{ viewModelContext.data }}
+        </div>
       `,
       imports: [ViewStateDirective],
     })
@@ -158,17 +159,15 @@ describe('ViewStateDirective', () => {
       private _viewModel = signal<ComponentViewModel<string>>({
         viewStatus: loadedViewStatus(),
         data: 'Hello World',
-      })
+      });
 
       public set viewModel(viewModel: ComponentViewModel<string>) {
-        this._viewModel.set(viewModel)
+        this._viewModel.set(viewModel);
       }
 
       public get viewModel(): ComponentViewModel<string> {
-        return this._viewModel()
+        return this._viewModel();
       }
-
-
     }
 
     let fixture: ComponentFixture<TestViewModelHostComponent>;
@@ -176,10 +175,10 @@ describe('ViewStateDirective', () => {
     beforeEach(async () => {
       TestBed.configureTestingModule({
         imports: [TestViewModelHostComponent, NoopAnimationsModule],
-        providers: [provideExperimentalZonelessChangeDetection()]
+        providers: [provideExperimentalZonelessChangeDetection()],
       });
       fixture = TestBed.createComponent(TestViewModelHostComponent);
-      await fixture.whenStable()
+      await fixture.whenStable();
     });
 
     describe('Directive Context', () => {
@@ -191,7 +190,7 @@ describe('ViewStateDirective', () => {
         await fixture.whenStable();
 
         expect(fixture.debugElement.query(By.css('.viewModel-content')).nativeElement.textContent).toContain(
-          'View Model Content Hello World',
+          'View Model Content Hello World'
         );
       });
 
@@ -204,7 +203,7 @@ describe('ViewStateDirective', () => {
         await fixture.whenStable();
 
         expect(fixture.debugElement.query(By.css('.viewModel-content')).nativeElement.textContent).toContain(
-          'View Model Content Hello World',
+          'View Model Content Hello World'
         );
 
         fixture.componentInstance.viewModel = {
@@ -214,7 +213,7 @@ describe('ViewStateDirective', () => {
         await fixture.whenStable();
 
         expect(fixture.debugElement.query(By.css('.viewModel-content')).nativeElement.textContent).toContain(
-          'View Model Content Hello World 2',
+          'View Model Content Hello World 2'
         );
       });
     });

@@ -4,22 +4,21 @@ import { LoadingComponent } from './loading.component';
 import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 
 describe('LoadingComponent', () => {
-	let component: LoadingComponent;
-	let fixture: ComponentFixture<LoadingComponent>;
+  let component: LoadingComponent;
+  let fixture: ComponentFixture<LoadingComponent>;
 
-	beforeEach(async () => {
-		await TestBed.configureTestingModule({
-				imports: [LoadingComponent],
-				providers: [provideExperimentalZonelessChangeDetection()]
-			})
-			.compileComponents();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [LoadingComponent],
+      providers: [provideExperimentalZonelessChangeDetection()],
+    }).compileComponents();
 
-		fixture = TestBed.createComponent(LoadingComponent);
-		component = fixture.componentInstance;
-		await fixture.whenStable();
-	});
+    fixture = TestBed.createComponent(LoadingComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

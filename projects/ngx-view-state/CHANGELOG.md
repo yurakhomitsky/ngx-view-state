@@ -1,16 +1,27 @@
 ## Changelog
 
-## 4.1.1
+## 4.1.2
+
 General changes:
+
+- Add: `.prettierrc` with standard formatting and style rules.
+- Add: `.prettierignore` to exclude common build, dependency, and editor-specific folders from formatting.
+- Add: Husky pre-commit hook for running lint-staged to enforce code quality before commits.
+- Add/Fix: `areViewStatusesEqual` to check if the status has actually changed in ViewStateDirective. Some statuses (like error statuses) include additional details—such as an error object. In these cases, it's not enough to simply check if the status type is "ERROR"; the function also compares the associated error data to catch meaningful changes.
+
+## 4.1.1
+
+General changes:
+
 - Refactor: Extract reducers, selectors, and models into separate files for better code organization.
 - Fix: Remove custom selector memoization that prevented selectors from emitting on state changes when ErrorViewState updates with different error object/message.
 - Optimize adapter functions (`upsertMany`, `removeMany`) to avoid unnecessary state updates for unchanged entities.
 - Improve selector memoization to ensure selectors only emit on actual state changes.
 
-
 ## 4.1.0
 
 General changes:
+
 - Refactor internal state management to remove dependency on `@ngrx/entity` adapter.
 - Replace entity adapter methods with custom adapter functions (`upsertOne`, `upsertMany`, `removeOne`, `removeMany`).
 - Remove `ids` array from state, relying directly on `entities` dictionary for managing action state.
@@ -28,32 +39,34 @@ General changes:
 ## 4.0.0
 
 General changes:
+
 - Angular/NgRx update to v19
 
 ## 3.2.1
 
 General changes:
+
 - Add custom memo for `selectActionViewStatus` and `selectViewState` selectors to avoid emitting the same view status multiple times
 - Update README.md
 
 ## 3.0.0
 
 General changes:
+
 - Update README.md
 - Rename and new properties,methods,functions
 
-
 - `createViewStateFeature`:
+
   - Rename:
-    -  `viewStatesFeatureKey` to `viewStatesFeatureName`
-    -  `selectActionStatus` to `selectActionViewStatus`
-    -  `selectLoadingActions` to `selectIsAnyActionLoading`
+    - `viewStatesFeatureKey` to `viewStatesFeatureName`
+    - `selectActionStatus` to `selectActionViewStatus`
+    - `selectLoadingActions` to `selectIsAnyActionLoading`
     - `selectViewStateIds` to `selectViewStateActionTypes`
   - New:
     - `selectIsAnyActionError`
     - `selectIsAnyActionLoaded`
     - `selectIsAnyActionIdle`
-
 
 - `ViewStateActionService`
   - New:
@@ -63,12 +76,11 @@ General changes:
 
 - fix: If the same action was included in multiple `ViewStateActionsConfig` configs, only last action config would be used. The store, effects, and service now correctly handles multiple actions across different configs.
 
-## 2.0.0    
+## 2.0.0
 
 - Rename ViewStateActionsConfig properties
   - `resetLoadingOn` to `resetOn`
   - `error` to `errorOn`
-
 
 ## 1.0.2
 

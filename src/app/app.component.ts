@@ -6,7 +6,6 @@ import { MatToolbar } from '@angular/material/toolbar';
   selector: 'app-root',
   imports: [TodosComponent, MatToolbar],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
-export class AppComponent {
-}
+export class AppComponent {}

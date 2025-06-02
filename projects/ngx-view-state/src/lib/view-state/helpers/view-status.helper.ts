@@ -16,3 +16,15 @@ export function isViewStatusLoaded(viewStatus: ViewStatus): viewStatus is ViewLo
 export function isViewStatusIdle(viewStatus: ViewStatus): viewStatus is ViewIdle {
   return viewStatus.type === ViewStatusEnum.IDLE;
 }
+
+/**
+ * Compares two ViewStatus objects for equality
+ * Returns true if both statuses have the same type and, in case of ERROR type, the same error
+ */
+export function areViewStatusesEqual(a: ViewStatus, b: ViewStatus): boolean {
+  if (a.type !== b.type) return false;
+  if (a.type === ViewStatusEnum.ERROR && b.type === ViewStatusEnum.ERROR) {
+    return a.error === b.error;
+  }
+  return true;
+}

@@ -6,7 +6,7 @@ import { removeMany, removeOne, upsertMany, upsertOne } from './view-state.adapt
 
 export function getViewStateReducer<E>() {
   const initialState: EntityState<ViewState<E>> = {
-    entities: {}
+    entities: {},
   };
 
   const reducer = createReducer(
@@ -18,12 +18,15 @@ export function getViewStateReducer<E>() {
       return upsertOne({ actionType, viewStatus: errorViewStatus<E>(error as E) }, state);
     }),
     on(ViewStateActions.errorMany, (state, { actionTypes }) => {
-      return upsertMany(actionTypes.map(({ actionType, error }) => {
-        return {
-          actionType,
-          viewStatus: errorViewStatus<E>(error as E)
-        };
-      }), state);
+      return upsertMany(
+        actionTypes.map(({ actionType, error }) => {
+          return {
+            actionType,
+            viewStatus: errorViewStatus<E>(error as E),
+          };
+        }),
+        state
+      );
     }),
     on(ViewStateActions.reset, (state, { actionType }) => {
       return removeOne(actionType, state);
@@ -35,6 +38,6 @@ export function getViewStateReducer<E>() {
 
   return {
     initialState,
-    reducer
+    reducer,
   };
 }

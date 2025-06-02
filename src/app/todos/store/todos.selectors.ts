@@ -2,4 +2,8 @@ import { selectActionViewStatus, selectIsAnyActionLoading } from '../../store/vi
 import { TodosActions } from './todos.actions';
 
 export const selectTodosViewStatus = selectActionViewStatus(TodosActions.loadTodos);
-export const selectActionsLoading = selectIsAnyActionLoading(TodosActions.addTodo, TodosActions.updateTodo, TodosActions.deleteTodo);
+export const selectActionsLoading = selectIsAnyActionLoading(
+  TodosActions.addTodo,
+  TodosActions.updateTodo,
+  TodosActions.deleteTodo
+);

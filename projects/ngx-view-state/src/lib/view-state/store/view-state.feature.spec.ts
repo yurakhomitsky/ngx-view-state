@@ -5,13 +5,13 @@ import { createViewStateFeature } from './view-state.feature';
 import { ViewError } from '../models/view-status.model';
 
 describe('ViewStateFeature', () => {
-  const { viewStatesFeature, initialState } = createViewStateFeature<string | { message: string } >();
+  const { viewStatesFeature, initialState } = createViewStateFeature<string | { message: string }>();
   it('should add loading action if its not in the state', () => {
     const state = viewStatesFeature.reducer(
       initialState,
       ViewStateActions.startLoading({
         actionType: '123',
-      }),
+      })
     );
 
     expect(state).toEqual({
@@ -36,7 +36,7 @@ describe('ViewStateFeature', () => {
       },
       ViewStateActions.reset({
         actionType: '123',
-      }),
+      })
     );
 
     expect(state).toEqual({
@@ -52,7 +52,7 @@ describe('ViewStateFeature', () => {
       ViewStateActions.error({
         actionType: '123',
         error: 'Custom error message',
-      }),
+      })
     );
 
     expect(state).toEqual({
@@ -75,7 +75,7 @@ describe('ViewStateFeature', () => {
           { actionType: '123', error: 'Custom error message' },
           { actionType: '456', error: 'Custom error message 2' },
         ],
-      }),
+      })
     );
 
     expect(state).toEqual({
@@ -108,7 +108,7 @@ describe('ViewStateFeature', () => {
       },
       ViewStateActions.resetMany({
         actionTypes: ['123', '456'],
-      }),
+      })
     );
 
     expect(state).toEqual({
@@ -121,7 +121,7 @@ describe('ViewStateFeature', () => {
       initialState,
       ViewStateActions.startLoading({
         actionType: '123',
-      }),
+      })
     );
 
     const errorState = viewStatesFeature.reducer(
@@ -129,7 +129,7 @@ describe('ViewStateFeature', () => {
       ViewStateActions.error({
         actionType: '123',
         error: 'Error occurred',
-      }),
+      })
     );
 
     expect(errorState).toEqual({
@@ -150,7 +150,7 @@ describe('ViewStateFeature', () => {
       originalState,
       ViewStateActions.startLoading({
         actionType: '123',
-      }),
+      })
     );
 
     expect(newState).not.toBe(originalState);
@@ -163,7 +163,7 @@ describe('ViewStateFeature', () => {
       originalState,
       ViewStateActions.reset({
         actionType: 'non-existent',
-      }),
+      })
     );
 
     expect(newState).toBe(originalState);
@@ -174,14 +174,14 @@ describe('ViewStateFeature', () => {
       initialState,
       ViewStateActions.startLoading({
         actionType: '123',
-      }),
+      })
     );
 
     const updatedState = viewStatesFeature.reducer(
       loadingState,
       ViewStateActions.startLoading({
         actionType: '123',
-      }),
+      })
     );
 
     expect(updatedState).toBe(loadingState);
@@ -195,7 +195,7 @@ describe('ViewStateFeature', () => {
         error: {
           message: 'Error 1',
         },
-      }),
+      })
     );
 
     const errorState2 = viewStatesFeature.reducer(
@@ -203,9 +203,9 @@ describe('ViewStateFeature', () => {
       ViewStateActions.error({
         actionType: '123',
         error: {
-          message: 'Error 3'
+          message: 'Error 3',
         },
-      }),
+      })
     );
 
     expect(errorState2).not.toBe(errorState1);
@@ -228,7 +228,7 @@ describe('ViewStateFeature', () => {
       originalState,
       ViewStateActions.resetMany({
         actionTypes: ['123', 'non-existent'],
-      }),
+      })
     );
 
     expect(newState).toEqual({
@@ -243,7 +243,7 @@ describe('ViewStateFeature', () => {
       originalState,
       ViewStateActions.errorMany({
         actionTypes: [],
-      }),
+      })
     );
 
     expect(newState).toBe(originalState);
@@ -255,7 +255,7 @@ describe('ViewStateFeature', () => {
       originalState,
       ViewStateActions.resetMany({
         actionTypes: [],
-      }),
+      })
     );
 
     expect(newState).toBe(originalState);

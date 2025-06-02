@@ -6,7 +6,16 @@ import { createViewStateFeature } from './view-state.feature';
 import { Dictionary, ViewState } from './view-state.model';
 
 describe('ViewStateSelectors', () => {
-  const { selectIsAnyActionLoading, selectIsAnyActionLoaded, selectIsAnyActionError, selectIsAnyActionIdle, selectActionViewStatus, selectAllViewState, selectViewStateActionTypes, selectViewState } = createViewStateFeature<string>();
+  const {
+    selectIsAnyActionLoading,
+    selectIsAnyActionLoaded,
+    selectIsAnyActionError,
+    selectIsAnyActionIdle,
+    selectActionViewStatus,
+    selectAllViewState,
+    selectViewStateActionTypes,
+    selectViewState,
+  } = createViewStateFeature<string>();
 
   describe('selectActionViewStatus', () => {
     it('should select action status', () => {
@@ -16,10 +25,12 @@ describe('ViewStateSelectors', () => {
 
       const selector = selectActionViewStatus(action);
 
-      expect(selector.projector({
-        actionType: action.type,
-        viewStatus: loadingViewStatus(),
-      },)).toEqual(loadingViewStatus());
+      expect(
+        selector.projector({
+          actionType: action.type,
+          viewStatus: loadingViewStatus(),
+        })
+      ).toEqual(loadingViewStatus());
     });
 
     it('should return the same view status reference if the type is the same', () => {
@@ -28,9 +39,9 @@ describe('ViewStateSelectors', () => {
       };
 
       const initialViewStatus: ViewState<string> = {
-          actionType: action.type,
-          viewStatus: idleViewStatus(),
-        };
+        actionType: action.type,
+        viewStatus: idleViewStatus(),
+      };
 
       const selector = selectActionViewStatus(action);
 
@@ -59,7 +70,7 @@ describe('ViewStateSelectors', () => {
 
       const errorStateNewReference: ViewState<string> = {
         ...errorState,
-        viewStatus: errorViewStatus('Error message - 2')
+        viewStatus: errorViewStatus('Error message - 2'),
       };
 
       const errorStatus2 = selector.projector(errorStateNewReference);
@@ -86,12 +97,12 @@ describe('ViewStateSelectors', () => {
 
       const errorStateNewReference: ViewState<string> = {
         ...errorState,
-      }
+      };
 
       const errorStatus2 = selector.projector(errorStateNewReference);
 
       expect(errorStatus2).toBe(errorStatus1);
-    })
+    });
   });
 
   describe('selectIsAnyActionsLoading', () => {
@@ -316,7 +327,7 @@ describe('ViewStateSelectors', () => {
 
       expect(selector.projector(stateDictionary)).toEqual(false);
     });
-  })
+  });
 
   describe('selectIsAnyActionsError', () => {
     it('should return true', () => {
@@ -425,7 +436,7 @@ describe('ViewStateSelectors', () => {
 
       expect(selector.projector(stateDictionary)).toEqual(true);
     });
-  })
+  });
 
   describe('selectIsAnyActionsIdle', () => {
     it('should return true', () => {
@@ -438,10 +449,10 @@ describe('ViewStateSelectors', () => {
       };
 
       const stateDictionary: Dictionary<ViewState<string>> = {
-        [getAdditionalDataAction.type]:  {
+        [getAdditionalDataAction.type]: {
           actionType: getAdditionalDataAction.type,
           viewStatus: idleViewStatus(),
-        }
+        },
       };
 
       const selector = selectIsAnyActionIdle(getDataAction, getAdditionalDataAction);
@@ -537,7 +548,7 @@ describe('ViewStateSelectors', () => {
 
       expect(selector.projector(stateDictionary)).toEqual(false);
     });
-  })
+  });
 
   describe('selectAll', () => {
     it('should return all actions', () => {
@@ -557,9 +568,8 @@ describe('ViewStateSelectors', () => {
         [getAdditionalDataAction.type]: {
           actionType: getAdditionalDataAction.type,
           viewStatus: loadedViewStatus(),
-        }
-      }
-
+        },
+      };
 
       expect(selectAllViewState.projector(stateDictionary)).toEqual([
         {
@@ -569,10 +579,10 @@ describe('ViewStateSelectors', () => {
         {
           actionType: getAdditionalDataAction.type,
           viewStatus: loadedViewStatus(),
-        }
+        },
       ]);
-    })
-  })
+    });
+  });
 
   describe('selectViewStateActionTypes', () => {
     it('should return all actions', () => {
@@ -592,15 +602,15 @@ describe('ViewStateSelectors', () => {
         [getAdditionalDataAction.type]: {
           actionType: getAdditionalDataAction.type,
           viewStatus: loadedViewStatus(),
-        }
-      }
+        },
+      };
 
       expect(selectViewStateActionTypes.projector(Object.values(stateDictionary))).toEqual([
         getDataAction.type,
-        getAdditionalDataAction.type
+        getAdditionalDataAction.type,
       ]);
-    })
-  })
+    });
+  });
 
   describe('selectViewState', () => {
     it('should return the view state for an action that exists in the state', () => {
@@ -614,7 +624,7 @@ describe('ViewStateSelectors', () => {
       };
 
       const stateDictionary: Dictionary<ViewState<string>> = {
-        [action.type]: viewState
+        [action.type]: viewState,
       };
 
       const selector = selectViewState(action);
@@ -634,8 +644,8 @@ describe('ViewStateSelectors', () => {
 
       expect(result).toEqual({
         actionType: action.type,
-        viewStatus: idleViewStatus()
+        viewStatus: idleViewStatus(),
       });
     });
-  })
+  });
 });

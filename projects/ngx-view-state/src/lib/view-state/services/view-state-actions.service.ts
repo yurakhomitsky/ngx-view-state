@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 
-
-export type ActionsMapConfig = { viewState: 'startLoading'  } | { viewState: 'reset', actionType: string } | { viewState: 'error', actionType: string };
+export type ActionsMapConfig =
+  | { viewState: 'startLoading' }
+  | { viewState: 'reset'; actionType: string }
+  | { viewState: 'error'; actionType: string };
 
 export interface ViewStateActionsConfig {
   startLoadingOn: Action;
   resetOn: Action[];
   errorOn: Action[];
 }
-
 
 @Injectable({
   providedIn: 'root',
@@ -42,18 +43,18 @@ export class ViewStateActionsService {
 
     return configs.reduce((acc: string[], config: ActionsMapConfig) => {
       if (config.viewState === 'error') {
-        acc.push(config.actionType)
+        acc.push(config.actionType);
       }
       return acc;
     }, []);
   }
 
   public getResetActionTypes(action: Action): string[] {
-    const configs = this.actionsMap.get(action.type) ?? []
+    const configs = this.actionsMap.get(action.type) ?? [];
 
     return configs.reduce((acc: string[], config: ActionsMapConfig) => {
       if (config.viewState === 'reset') {
-        acc.push(config.actionType)
+        acc.push(config.actionType);
       }
       return acc;
     }, []);
@@ -76,7 +77,7 @@ export class ViewStateActionsService {
   public remove(action: Action): void {
     this.actionsMap.delete(action.type);
 
-    this.actionsMap.forEach((configs: ActionsMapConfig[], key ) => {
+    this.actionsMap.forEach((configs: ActionsMapConfig[], key) => {
       const filteredConfigs = configs.filter((config: ActionsMapConfig) => {
         return config.viewState === 'startLoading' || config.actionType !== action.type;
       });
@@ -91,6 +92,6 @@ export class ViewStateActionsService {
 
   private checkViewState(action: Action, viewState: string): boolean {
     const configs = this.getActionConfigs(action);
-    return configs.some(config => config.viewState === viewState);
+    return configs.some((config) => config.viewState === viewState);
   }
 }

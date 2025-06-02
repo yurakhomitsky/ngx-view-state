@@ -9,10 +9,7 @@ describe('getComponentViewModel', () => {
     const source$ = of('test').pipe(mapToViewModel());
 
     source$.pipe(take(2), toArray()).subscribe((res) => {
-      expect(res).toEqual([
-        { viewStatus: loadingViewStatus() },
-        { viewStatus: loadedViewStatus(), data: 'test' }
-      ])
+      expect(res).toEqual([{ viewStatus: loadingViewStatus() }, { viewStatus: loadedViewStatus(), data: 'test' }]);
       done();
     });
   });
@@ -22,41 +19,39 @@ describe('getComponentViewModel', () => {
     const source$ = throwError(() => error).pipe(mapToViewModel());
 
     source$.pipe(take(2), toArray()).subscribe((res) => {
-      expect(res).toEqual([
-        { viewStatus: loadingViewStatus() },
-        { viewStatus: errorViewStatus(error) }
-      ]);
+      expect(res).toEqual([{ viewStatus: loadingViewStatus() }, { viewStatus: errorViewStatus(error) }]);
     });
     done();
   });
 
   it('should map based on provided map function', (done) => {
-    const source$ = of('test').pipe(mapToViewModel({
-      onSuccess: (data) => ({ viewStatus: loadedViewStatus(), data: data + ' hello' })
-    }));
+    const source$ = of('test').pipe(
+      mapToViewModel({
+        onSuccess: (data) => ({ viewStatus: loadedViewStatus(), data: data + ' hello' }),
+      })
+    );
 
     source$.pipe(take(2), toArray()).subscribe((res) => {
       expect(res).toEqual([
         { viewStatus: loadingViewStatus() },
-        { viewStatus: loadedViewStatus(), data: 'test hello' }
-      ])
+        { viewStatus: loadedViewStatus(), data: 'test hello' },
+      ]);
       done();
     });
-  })
+  });
 
   it('should map based on provided map function with error', (done) => {
     const error = new Error('Oops');
 
-    const source$ = throwError(() => error).pipe(mapToViewModel({
-      onError: (error) => ({ viewStatus: errorViewStatus('Mapped error') })
-    }));
+    const source$ = throwError(() => error).pipe(
+      mapToViewModel({
+        onError: () => ({ viewStatus: errorViewStatus('Mapped error') }),
+      })
+    );
 
     source$.pipe(take(2), toArray()).subscribe((res) => {
-      expect(res).toEqual([
-        { viewStatus: loadingViewStatus() },
-        { viewStatus: errorViewStatus('Mapped error') }
-      ]);
+      expect(res).toEqual([{ viewStatus: loadingViewStatus() }, { viewStatus: errorViewStatus('Mapped error') }]);
     });
     done();
-  })
+  });
 });

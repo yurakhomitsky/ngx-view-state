@@ -7,23 +7,24 @@ import {
   TemplateRef,
   Type,
   ViewContainerRef,
-  input
+  input,
 } from '@angular/core';
 import { ViewStatusEnum } from './models/view-status.enum';
 import { ViewStatus } from './models/view-status.model';
 import { ViewContextValue, ViewStatusHandlers, ViewTypeConstraint } from './view-state.model';
 import { ERROR_STATE_COMPONENT, LOADING_STATE_COMPONENT } from './tokens/default-state-components.token';
 import { ViewStateErrorComponent } from './models/view-state-component.model';
+import { areViewStatusesEqual } from './helpers';
 
 export interface ViewStateContext<T> {
   /**
    * using `$implicit` to enable `let` syntax: `*ngxViewState="obs$; let o"`
    */
-  $implicit: ViewContextValue<T>
+  $implicit: ViewContextValue<T>;
   /**
    * using `ngxViewState` to enable `as` syntax: `*ngxViewState="obs$ as o"`
    */
-  ngxViewState: ViewContextValue<T>
+  ngxViewState: ViewContextValue<T>;
 }
 
 @Directive({
@@ -32,7 +33,7 @@ export interface ViewStateContext<T> {
 export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implements OnDestroy {
   static ngTemplateContextGuard<T extends ViewTypeConstraint<unknown>>(
     dir: ViewStateDirective<T>,
-    ctx: unknown,
+    ctx: unknown
   ): ctx is ViewStateContext<T> {
     return true;
   }
@@ -47,7 +48,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
 
   @Input({ required: true, alias: 'ngxViewState' })
   public set viewState(value: T | null) {
-    // If we use the async pipe the first value will be null
+    // If we use the async pipe, the first value will be null
     if (value == null) {
       this.viewContainerRef.clear();
       this.createSpinner();
@@ -60,7 +61,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
 
     this.updateContext(value);
 
-    if (this._viewStatus?.type === viewStatus.type) {
+    if (this._viewStatus && areViewStatusesEqual(this._viewStatus, viewStatus)) {
       return;
     }
 
@@ -68,7 +69,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
 
     this.onViewStateChange({
       viewStatus,
-      value
+      value,
     });
   }
 
@@ -104,7 +105,7 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     @Inject(ERROR_STATE_COMPONENT)
     private errorStateComponent: Type<ViewStateErrorComponent<unknown>>,
     @Inject(LOADING_STATE_COMPONENT)
-    private loadingStateComponent: Type<unknown>,
+    private loadingStateComponent: Type<unknown>
   ) {}
 
   public ngOnDestroy(): void {

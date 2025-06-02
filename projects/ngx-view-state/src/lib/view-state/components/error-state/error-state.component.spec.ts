@@ -12,7 +12,7 @@ describe('ErrorStateComponent', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [ErrorStateComponent, MatIconTestingModule],
-      providers: [provideExperimentalZonelessChangeDetection()]
+      providers: [provideExperimentalZonelessChangeDetection()],
     });
     fixture = TestBed.createComponent(ErrorStateComponent);
     component = fixture.componentInstance;
@@ -24,7 +24,9 @@ describe('ErrorStateComponent', () => {
   });
 
   it('should display default error text', () => {
-    expect(fixture.debugElement.query(By.css('h2')).nativeElement.textContent).toContain('There is an error displaying this data');
+    expect(fixture.debugElement.query(By.css('h2')).nativeElement.textContent).toContain(
+      'There is an error displaying this data'
+    );
   });
 
   it('should display custom error text', async () => {

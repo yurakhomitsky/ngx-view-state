@@ -3,9 +3,7 @@ import { ViewStateErrorComponent } from '../../models/view-state-component.model
 
 @Component({
   selector: 'ngx-error-state',
-  template: `
-    <h2>{{ viewStateError || 'There is an error displaying this data' }}</h2>
-  `,
+  template: ` <h2>{{ viewStateError || 'There is an error displaying this data' }}</h2> `,
   styles: [
     `
       :host {

@@ -1,7 +1,12 @@
+import { ViewError, ViewIdle, ViewLoaded, ViewLoading, ViewStatus } from '../models/view-status.model';
 
-import { ViewError, ViewIdle, ViewLoaded, ViewLoading } from '../models/view-status.model';
-
-import { isViewStatusLoading, isViewStatusError, isViewStatusIdle, isViewStatusLoaded } from './view-status.helper';
+import {
+  isViewStatusLoading,
+  isViewStatusError,
+  isViewStatusIdle,
+  isViewStatusLoaded,
+  areViewStatusesEqual,
+} from './view-status.helper';
 import { errorViewStatus, idleViewStatus, loadedViewStatus, loadingViewStatus } from '../factories';
 
 describe('ViewStatusHelpers', () => {
@@ -54,6 +59,44 @@ describe('ViewStatusHelpers', () => {
 
     it('should return false when viewStatus is not idle', () => {
       expect(isViewStatusIdle(viewStatusLoading)).toBe(false);
+    });
+  });
+
+  describe('areViewStatusesEqual', () => {
+    it('should return false if types are different', () => {
+      const status1: ViewStatus = loadingViewStatus();
+      const status2: ViewStatus = idleViewStatus();
+
+      const result = areViewStatusesEqual(status1, status2);
+
+      expect(result).toBe(false);
+    });
+
+    it('should return true if types are the same and not ERROR', () => {
+      const status1: ViewStatus = loadingViewStatus();
+      const status2: ViewStatus = loadingViewStatus();
+
+      const result = areViewStatusesEqual(status1, status2);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return true if ERROR types with same error', () => {
+      const status1: ViewStatus<string> = errorViewStatus('Same error');
+      const status2: ViewStatus<string> = errorViewStatus('Same error');
+
+      const result = areViewStatusesEqual(status1, status2);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false if ERROR types with different errors', () => {
+      const status1: ViewStatus<string> = errorViewStatus('Error 1');
+      const status2: ViewStatus<string> = errorViewStatus('Error 2');
+
+      const result = areViewStatusesEqual(status1, status2);
+
+      expect(result).toBe(false);
     });
   });
 });

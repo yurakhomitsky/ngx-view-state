@@ -31,7 +31,7 @@ describe('ViewStateEffects', () => {
         ViewStateEffects,
         provideMockActions(() => actions$),
         { provide: ViewStateActionsService, useValue: viewStateActionsServiceSpy },
-        provideExperimentalZonelessChangeDetection()
+        provideExperimentalZonelessChangeDetection(),
       ],
     });
 
@@ -104,10 +104,17 @@ describe('ViewStateEffects', () => {
 
   describe('error$', () => {
     it('should map to errorMany action', (done) => {
-      const loadDataFailure: Action & ViewStateErrorProps<string> = { type: 'loadDataFailure', viewStateError: 'custom error message' };
+      const loadDataFailure: Action & ViewStateErrorProps<string> = {
+        type: 'loadDataFailure',
+        viewStateError: 'custom error message',
+      };
 
       effects.error$.subscribe((action) => {
-        expect(action).toEqual(ViewStateActions.errorMany({actionTypes: [{ actionType: 'loadData', error: loadDataFailure.viewStateError ?? '' }]}));
+        expect(action).toEqual(
+          ViewStateActions.errorMany({
+            actionTypes: [{ actionType: 'loadData', error: loadDataFailure.viewStateError ?? '' }],
+          })
+        );
         done();
       });
 

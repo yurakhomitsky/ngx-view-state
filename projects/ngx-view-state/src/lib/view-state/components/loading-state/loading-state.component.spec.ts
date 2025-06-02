@@ -10,7 +10,7 @@ describe('LoadingStateComponent', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [LoadingStateComponent],
-      providers: [provideExperimentalZonelessChangeDetection()]
+      providers: [provideExperimentalZonelessChangeDetection()],
     });
     fixture = TestBed.createComponent(LoadingStateComponent);
     component = fixture.componentInstance;

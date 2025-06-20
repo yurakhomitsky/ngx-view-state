@@ -1,5 +1,12 @@
 ## Changelog
 
+## 4.1.3
+
+General changes:
+
+- Corrected the InjectionToken description for the error component
+- Update README.md
+
 ## 4.1.2
 
 General changes:

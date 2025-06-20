@@ -9,6 +9,7 @@ The `ngx-view-state` library is designed to simplify managing Loading/Success/Er
 - [Usage ngxViewState directive](#usage-ngxviewstate-directive)
 - [Components customization](#components-customization)
 - [Usage with HttpClient](#usage-with-httpclient)
+- [Key parts of the library](#key-parts-of-the-library)
 - [Documentation](#documentation)
 
 ### [Stackblitz Example](https://stackblitz.com/edit/ngx-view-state)
@@ -215,10 +216,41 @@ loadTodos(): Observable<ComponentViewModel<Todo[]>> {
             mapToViewModel({
                 onSuccess: (data) => ({ viewStatus: loadedViewStatus(), data: data.map(...) }),
                 onError: (error) => ({ viewStatus: errorViewStatus('Failed to load todos') })
-            }
+            })
         );
     }
 ```
+
+## Key parts of the library
+
+### State management
+
+- **`createViewStateFeature`** (`view-state.feature.ts`)  
+  Factory that creates an NgRx feature to manage view states for actions.  
+  Generates selectors such as `selectActionViewStatus` and `selectIsAnyActionLoading`.
+- **`ViewStateActions`** (`view-state.actions.ts`)  
+  Defines actions for starting, resetting, or reporting errors in view states.
+- **`ViewStateEffects`** (`view-state.effects.ts`)  
+  Listens for configured actions and dispatches view-state actions to update the store.
+- **`ViewStateActionsService`** – a service that maps specific actions to “start loading,” “reset,” or “error” behaviors. It exposes helpers like add, remove, and checks for a given action type.
+  This service is typically injected in an NgRx effect to register which actions affect the view state
+
+### Directive for templates
+
+- **`ViewStateDirective`**  
+  Allows components to display content, loading, or error components based on a `ViewStatus` or `ComponentViewModel`.  
+  Reacts to status changes and renders the appropriate template, spinner, or error component.
+
+### Helpers and models
+
+- Factory functions for constructing `ViewStatus` values (`loadingViewStatus`, `errorViewStatus`, etc.).
+- **`mapToViewModel`**  
+  Helper to transform HTTP responses into a typed view model used by the directive.
+
+### Default components & customization
+
+- Simple `LoadingStateComponent` and `ErrorStateComponent` are located in `components/`.  
+  You can supply custom components via the `provideLoadingStateComponent` or `provideErrorStateComponent` tokens.
 
 ## Documentation
 

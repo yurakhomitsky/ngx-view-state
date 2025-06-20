@@ -16,5 +16,5 @@ import { ViewStateErrorComponent } from 'ngx-view-state';
 })
 export class ErrorComponent implements ViewStateErrorComponent<string> {
   @Input()
-  viewStateError: string = '';
+  viewStateError = '';
 }

@@ -1,8 +1,6 @@
 import { ViewStatus } from '../models/view-status.model';
 
-export interface Dictionary<T> {
-  [id: string]: T;
-}
+export type Dictionary<T> = Record<string, T>;
 
 export interface EntityState<T> {
   entities: Dictionary<T>;

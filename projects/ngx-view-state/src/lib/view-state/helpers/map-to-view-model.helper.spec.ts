@@ -20,8 +20,8 @@ describe('getComponentViewModel', () => {
 
     source$.pipe(take(2), toArray()).subscribe((res) => {
       expect(res).toEqual([{ viewStatus: loadingViewStatus() }, { viewStatus: errorViewStatus(error) }]);
+      done();
     });
-    done();
   });
 
   it('should map based on provided map function', (done) => {
@@ -51,7 +51,7 @@ describe('getComponentViewModel', () => {
 
     source$.pipe(take(2), toArray()).subscribe((res) => {
       expect(res).toEqual([{ viewStatus: loadingViewStatus() }, { viewStatus: errorViewStatus('Mapped error') }]);
+      done();
     });
-    done();
   });
 });

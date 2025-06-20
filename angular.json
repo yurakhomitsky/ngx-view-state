@@ -16,8 +16,7 @@
             "outputPath": "dist/ngx-view-state-application",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [
-            ],
+            "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
@@ -85,6 +84,17 @@
               "src/styles.css"
             ],
             "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html",
+              "projects/ngx-view-state/**/*.ts",
+              "projects/ngx-view-state/**/*.html"
+            ]
           }
         }
       }

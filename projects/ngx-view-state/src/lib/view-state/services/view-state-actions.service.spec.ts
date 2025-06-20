@@ -9,7 +9,7 @@ describe('ViewStateActionsService', () => {
 
   const loadData: Action = { type: 'load data' };
   const loadDataSuccess: Action = { type: 'data loaded success' };
-  const lodDataFailure: Action = { type: 'data loaded failure' };
+  const loadDataFailure: Action = { type: 'data loaded failure' };
 
   const loadData2: Action = { type: 'load data 2' };
   const loadDataSuccess2: Action = { type: 'data loaded success 2' };
@@ -19,7 +19,7 @@ describe('ViewStateActionsService', () => {
     {
       startLoadingOn: loadData,
       resetOn: [loadDataSuccess, loadData2],
-      errorOn: [lodDataFailure, lodDataFailure2],
+      errorOn: [loadDataFailure, lodDataFailure2],
     },
     {
       startLoadingOn: loadData2,
@@ -46,7 +46,7 @@ describe('ViewStateActionsService', () => {
   it('should contain correct actions', () => {
     expect(service.getActionConfigs(loadData)).toEqual([{ viewState: 'startLoading' }]);
     expect(service.getActionConfigs(loadDataSuccess)).toEqual([{ viewState: 'reset', actionType: loadData.type }]);
-    expect(service.getActionConfigs(lodDataFailure)).toEqual([{ viewState: 'error', actionType: loadData.type }]);
+    expect(service.getActionConfigs(loadDataFailure)).toEqual([{ viewState: 'error', actionType: loadData.type }]);
 
     expect(service.getActionConfigs(loadData2)).toEqual(
       jasmine.arrayContaining([{ viewState: 'startLoading' }, { viewState: 'reset', actionType: loadData.type }])
@@ -84,7 +84,7 @@ describe('ViewStateActionsService', () => {
     });
 
     it('should return false for lodDataFailure', () => {
-      expect(service.isStartLoadingAction(lodDataFailure)).toBe(false);
+      expect(service.isStartLoadingAction(loadDataFailure)).toBe(false);
     });
 
     it('should return true for loadData2', () => {
@@ -98,7 +98,7 @@ describe('ViewStateActionsService', () => {
     });
 
     it('should return true for lodDataFailure', () => {
-      expect(service.isResetLoadingAction(lodDataFailure)).toBe(false);
+      expect(service.isResetLoadingAction(loadDataFailure)).toBe(false);
     });
 
     it('should return false for loadData', () => {
@@ -116,7 +116,7 @@ describe('ViewStateActionsService', () => {
 
   describe('isErrorAction', () => {
     it('should return true for loadDataFailure', () => {
-      expect(service.isErrorAction(lodDataFailure)).toBe(true);
+      expect(service.isErrorAction(loadDataFailure)).toBe(true);
     });
 
     it('should return false for loadDataSuccess', () => {

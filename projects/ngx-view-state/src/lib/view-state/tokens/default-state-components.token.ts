@@ -8,7 +8,7 @@ export const LOADING_STATE_COMPONENT = new InjectionToken<Type<unknown>>('ngx-vi
 });
 
 export const ERROR_STATE_COMPONENT = new InjectionToken<Type<ViewStateErrorComponent<unknown>>>(
-  'ngx-view-state.loadingComponent',
+  'ngx-view-state.errorComponent',
   {
     providedIn: 'root',
     factory: () => ErrorStateComponent,

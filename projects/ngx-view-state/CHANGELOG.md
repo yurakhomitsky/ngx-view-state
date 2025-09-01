@@ -1,5 +1,11 @@
 ## Changelog
 
+## 5.0.0
+
+General changes:
+
+- Angular v20 update
+
 ## 4.1.3
 
 General changes:

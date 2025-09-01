@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TodosComponent } from './todos.component';
-import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { provideMockStore } from '@ngrx/store/testing';
 import { selectTodos } from './store/todos.feature';
 import { selectActionsLoading, selectTodosViewStatus } from './store/todos.selectors';
@@ -15,7 +15,7 @@ describe('TodosComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TodosComponent],
       providers: [
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
         provideMockStore({
           selectors: [
             {

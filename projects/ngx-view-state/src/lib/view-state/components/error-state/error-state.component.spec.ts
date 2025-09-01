@@ -3,7 +3,7 @@ import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { By } from '@angular/platform-browser';
 
 import { ErrorStateComponent } from './error-state.component';
-import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('ErrorStateComponent', () => {
   let component: ErrorStateComponent;
@@ -12,7 +12,7 @@ describe('ErrorStateComponent', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [ErrorStateComponent, MatIconTestingModule],
-      providers: [provideExperimentalZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection()],
     });
     fixture = TestBed.createComponent(ErrorStateComponent);
     component = fixture.componentInstance;

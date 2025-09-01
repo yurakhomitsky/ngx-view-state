@@ -1,4 +1,4 @@
-import { Injectable, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { Injectable, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Actions, createEffect, EffectsModule, ofType } from '@ngrx/effects';
 import { Action, createActionGroup, emptyProps, props, Store, StoreModule } from '@ngrx/store';
@@ -129,7 +129,7 @@ describe('ViewStateIntegration', () => {
         StoreModule.forFeature(viewStatesFeature),
         EffectsModule.forFeature([ViewStateEffects, DataEffects]),
       ],
-      providers: [provideExperimentalZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
 
     store = TestBed.inject(Store);

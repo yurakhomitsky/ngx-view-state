@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, provideExperimentalZonelessChangeDetection, signal } from '@angular/core';
+import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -45,7 +45,7 @@ describe('ViewStateDirective', () => {
     beforeEach(async () => {
       TestBed.configureTestingModule({
         imports: [TestViewStatusHostComponent, NoopAnimationsModule],
-        providers: [provideExperimentalZonelessChangeDetection()],
+        providers: [provideZonelessChangeDetection()],
       });
       fixture = TestBed.createComponent(TestViewStatusHostComponent);
       await fixture.whenStable();
@@ -175,7 +175,7 @@ describe('ViewStateDirective', () => {
     beforeEach(async () => {
       TestBed.configureTestingModule({
         imports: [TestViewModelHostComponent, NoopAnimationsModule],
-        providers: [provideExperimentalZonelessChangeDetection()],
+        providers: [provideZonelessChangeDetection()],
       });
       fixture = TestBed.createComponent(TestViewModelHostComponent);
       await fixture.whenStable();

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Action } from '@ngrx/store';
 
 import { ViewStateActionsConfig, ViewStateActionsService } from './view-state-actions.service';
-import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('ViewStateActionsService', () => {
   let service: ViewStateActionsService;
@@ -30,7 +30,7 @@ describe('ViewStateActionsService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ViewStateActionsService, provideExperimentalZonelessChangeDetection()],
+      providers: [ViewStateActionsService, provideZonelessChangeDetection()],
     });
     service = TestBed.inject(ViewStateActionsService);
   });

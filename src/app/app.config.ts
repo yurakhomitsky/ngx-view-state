@@ -1,4 +1,4 @@
-import { ApplicationConfig, isDevMode, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, isDevMode, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, Routes } from '@angular/router';
 
 import { provideState, provideStore } from '@ngrx/store';
@@ -27,6 +27,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideLoadingStateComponent(LoadingComponent),
     provideErrorStateComponent(ErrorComponent),
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
   ],
 };

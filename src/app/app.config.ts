@@ -7,7 +7,6 @@ import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient } from '@angular/common/http';
 import { viewStatesFeature } from './store/view-state.feature';
 import { ViewStateEffects, provideLoadingStateComponent, provideErrorStateComponent } from 'ngx-view-state';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { todosFeature } from './todos/store/todos.feature';
 import { TodosEffects } from './todos/store/todos.effects';
 import { LoadingComponent } from './todos/components/loading/loading.component';
@@ -24,7 +23,6 @@ export const appConfig: ApplicationConfig = {
     provideState(todosFeature),
     provideEffects(ViewStateEffects, TodosEffects),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
-    provideAnimationsAsync(),
     provideLoadingStateComponent(LoadingComponent),
     provideErrorStateComponent(ErrorComponent),
     provideZonelessChangeDetection(),

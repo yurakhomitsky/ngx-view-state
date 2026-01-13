@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { errorViewStatus, loadingViewStatus } from '../factories';
 
 import { ViewStateActions } from './view-state.actions';
@@ -5,7 +6,12 @@ import { createViewStateFeature } from './view-state.feature';
 import { ViewError } from '../models/view-status.model';
 
 describe('ViewStateFeature', () => {
-  const { viewStatesFeature, initialState } = createViewStateFeature<string | { message: string }>();
+  const { viewStatesFeature, initialState } = createViewStateFeature<
+    | string
+    | {
+        message: string;
+      }
+  >();
   it('should add loading action if its not in the state', () => {
     const state = viewStatesFeature.reducer(
       initialState,

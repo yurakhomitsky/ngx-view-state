@@ -1,8 +1,8 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { AsyncPipe } from '@angular/common';
 import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Subject } from 'rxjs';
 
 import { ErrorStateComponent, LoadingStateComponent } from './components';
@@ -18,7 +18,7 @@ describe('ViewStateDirective', () => {
       selector: 'app-test-host',
       template: `
         <div *ngxViewState="viewStatus as viewStatusContext" class="static-content">
-          Content static {{ viewStatusContext.type }}
+          Content static {{ $any(viewStatusContext).type }}
         </div>
         <div *ngxViewState="viewStatusSubject$ | async as viewStatusContext" class="async-content">
           Content async pipe {{ viewStatusContext.type }}
@@ -28,7 +28,7 @@ describe('ViewStateDirective', () => {
     })
     class TestViewStatusHostComponent {
       private viewStatus$ = signal<ViewStatus | null>(null);
-      public viewStatusSubject$: Subject<ViewStatus | null> = new Subject<ViewStatus | null>();
+      public viewStatusSubject$ = new Subject<ViewStatus | null>();
 
       public get viewStatus(): ViewStatus | null {
         return this.viewStatus$();
@@ -44,7 +44,7 @@ describe('ViewStateDirective', () => {
 
     beforeEach(async () => {
       TestBed.configureTestingModule({
-        imports: [TestViewStatusHostComponent, NoopAnimationsModule],
+        imports: [TestViewStatusHostComponent],
         providers: [provideZonelessChangeDetection()],
       });
       fixture = TestBed.createComponent(TestViewStatusHostComponent);
@@ -174,7 +174,7 @@ describe('ViewStateDirective', () => {
 
     beforeEach(async () => {
       TestBed.configureTestingModule({
-        imports: [TestViewModelHostComponent, NoopAnimationsModule],
+        imports: [TestViewModelHostComponent],
         providers: [provideZonelessChangeDetection()],
       });
       fixture = TestBed.createComponent(TestViewModelHostComponent);

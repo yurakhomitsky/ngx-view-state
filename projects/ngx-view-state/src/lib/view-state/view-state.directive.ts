@@ -38,12 +38,8 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
     return true;
   }
 
-  private readonly viewContext: ViewStateContext<T | undefined> = {
-    $implicit: undefined,
-    ngxViewState: undefined,
-  };
+  private viewContext: ViewStateContext<T> | undefined = undefined;
 
-  private _viewState!: T;
   private _viewStatus: ViewStatus | null = null;
 
   @Input({ required: true, alias: 'ngxViewState' })
@@ -54,8 +50,6 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
       this.createSpinner();
       return;
     }
-
-    this._viewState = value;
 
     const viewStatus: ViewStatus = 'type' in value ? value : value.viewStatus;
 
@@ -71,10 +65,6 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
       viewStatus,
       value,
     });
-  }
-
-  public get viewState(): T {
-    return this._viewState;
   }
 
   public readonly ngxViewStateLoading = input<TemplateRef<ViewStateContext<T>>>();
@@ -120,8 +110,15 @@ export class ViewStateDirective<T extends ViewTypeConstraint<unknown>> implement
   }
 
   private updateContext(value: T): void {
-    this.viewContext.$implicit = value as unknown as ViewContextValue<T>;
-    this.viewContext.ngxViewState = value as unknown as ViewContextValue<T>;
+    if (this.viewContext) {
+      this.viewContext.$implicit = value as unknown as ViewContextValue<T>;
+      this.viewContext.ngxViewState = value as unknown as ViewContextValue<T>;
+    } else {
+      this.viewContext = {
+        $implicit: value as unknown as ViewContextValue<T>,
+        ngxViewState: value as unknown as ViewContextValue<T>,
+      };
+    }
   }
 
   private createContent(): void {

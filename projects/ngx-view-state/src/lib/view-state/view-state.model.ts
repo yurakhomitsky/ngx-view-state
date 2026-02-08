@@ -18,4 +18,4 @@ export type ViewContextValue<T> = T extends ViewStatus
   ? ViewLoaded
   : T extends ComponentViewModel<infer U>
     ? { data: U; viewStatus: ViewLoaded }
-    : T;
+    : never;

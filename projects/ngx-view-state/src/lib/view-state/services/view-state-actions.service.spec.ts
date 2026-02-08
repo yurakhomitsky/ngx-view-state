@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { Action } from '@ngrx/store';
 
@@ -49,11 +50,11 @@ describe('ViewStateActionsService', () => {
     expect(service.getActionConfigs(loadDataFailure)).toEqual([{ viewState: 'error', actionType: loadData.type }]);
 
     expect(service.getActionConfigs(loadData2)).toEqual(
-      jasmine.arrayContaining([{ viewState: 'startLoading' }, { viewState: 'reset', actionType: loadData.type }])
+      expect.arrayContaining([{ viewState: 'startLoading' }, { viewState: 'reset', actionType: loadData.type }])
     );
     expect(service.getActionConfigs(loadDataSuccess2)).toEqual([{ viewState: 'reset', actionType: loadData2.type }]);
     expect(service.getActionConfigs(lodDataFailure2)).toEqual(
-      jasmine.arrayContaining([
+      expect.arrayContaining([
         { viewState: 'error', actionType: loadData2.type },
         { viewState: 'error', actionType: loadData.type },
       ])

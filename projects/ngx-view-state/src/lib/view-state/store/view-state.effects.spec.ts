@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -13,15 +14,15 @@ import { provideZonelessChangeDetection } from '@angular/core';
 describe('ViewStateEffects', () => {
   let actions$: ReplaySubject<Action>;
   let effects: ViewStateEffects;
-  const viewStateActionsServiceSpy = jasmine.createSpyObj<ViewStateActionsService>('ViewStateActionsService', [
-    'add',
-    'isStartLoadingAction',
-    'isErrorAction',
-    'isResetLoadingAction',
-    'getResetActionTypes',
-    'getErrorActionTypes',
-    'isViewStateAction',
-  ]);
+  const viewStateActionsServiceSpy = {
+    add: vi.fn().mockName('ViewStateActionsService.add'),
+    isStartLoadingAction: vi.fn().mockName('ViewStateActionsService.isStartLoadingAction'),
+    isErrorAction: vi.fn().mockName('ViewStateActionsService.isErrorAction'),
+    isResetLoadingAction: vi.fn().mockName('ViewStateActionsService.isResetLoadingAction'),
+    getResetActionTypes: vi.fn().mockName('ViewStateActionsService.getResetActionTypes'),
+    getErrorActionTypes: vi.fn().mockName('ViewStateActionsService.getErrorActionTypes'),
+    isViewStateAction: vi.fn().mockName('ViewStateActionsService.isViewStateAction'),
+  };
 
   beforeEach(() => {
     actions$ = new ReplaySubject(1);
@@ -35,7 +36,7 @@ describe('ViewStateEffects', () => {
       ],
     });
 
-    viewStateActionsServiceSpy.isViewStateAction.and.returnValue(true);
+    viewStateActionsServiceSpy.isViewStateAction.mockReturnValue(true);
 
     effects = TestBed.inject(ViewStateEffects);
   });
@@ -45,15 +46,14 @@ describe('ViewStateEffects', () => {
   });
 
   describe('startLoading$', () => {
-    it('should map to startLoading action', (done) => {
+    it('should map to startLoading action', async () => {
       const loadData: Action = { type: 'loadData' };
 
       effects.startLoading$.subscribe((action) => {
         expect(action).toEqual(ViewStateActions.startLoading({ actionType: loadData.type }));
-        done();
       });
 
-      viewStateActionsServiceSpy.isStartLoadingAction.and.returnValue(true);
+      viewStateActionsServiceSpy.isStartLoadingAction.mockReturnValue(true);
 
       actions$.next(loadData);
     });
@@ -61,11 +61,11 @@ describe('ViewStateEffects', () => {
     it('should not map to startLoading action', () => {
       const loadData: Action = { type: 'loadData' };
 
-      const spy = jasmine.createSpy();
+      const spy = vi.fn();
 
       effects.startLoading$.subscribe(spy);
 
-      viewStateActionsServiceSpy.isStartLoadingAction.and.returnValue(false);
+      viewStateActionsServiceSpy.isStartLoadingAction.mockReturnValue(false);
 
       actions$.next(loadData);
 
@@ -74,27 +74,26 @@ describe('ViewStateEffects', () => {
   });
 
   describe('reset$', () => {
-    it('should map to resetMany action', (done) => {
+    it('should map to resetMany action', async () => {
       const loadDataSuccess: Action = { type: 'loadDataSuccess' };
 
       effects.reset$.subscribe((action) => {
         expect(action).toEqual(ViewStateActions.resetMany({ actionTypes: ['loadData'] }));
-        done();
       });
 
-      viewStateActionsServiceSpy.isResetLoadingAction.and.returnValue(true);
-      viewStateActionsServiceSpy.getResetActionTypes.and.returnValue(['loadData']);
+      viewStateActionsServiceSpy.isResetLoadingAction.mockReturnValue(true);
+      viewStateActionsServiceSpy.getResetActionTypes.mockReturnValue(['loadData']);
 
       actions$.next(loadDataSuccess);
     });
 
     it('should not map to reset action', () => {
       const someAction: Action = { type: 'some action' };
-      const spy = jasmine.createSpy();
+      const spy = vi.fn();
 
       effects.reset$.subscribe(spy);
 
-      viewStateActionsServiceSpy.isResetLoadingAction.and.returnValue(false);
+      viewStateActionsServiceSpy.isResetLoadingAction.mockReturnValue(false);
 
       actions$.next(someAction);
 
@@ -103,7 +102,7 @@ describe('ViewStateEffects', () => {
   });
 
   describe('error$', () => {
-    it('should map to errorMany action', (done) => {
+    it('should map to errorMany action', async () => {
       const loadDataFailure: Action & ViewStateErrorProps<string> = {
         type: 'loadDataFailure',
         viewStateError: 'custom error message',
@@ -115,22 +114,21 @@ describe('ViewStateEffects', () => {
             actionTypes: [{ actionType: 'loadData', error: loadDataFailure.viewStateError ?? '' }],
           })
         );
-        done();
       });
 
-      viewStateActionsServiceSpy.isErrorAction.and.returnValue(true);
-      viewStateActionsServiceSpy.getErrorActionTypes.and.returnValue(['loadData']);
+      viewStateActionsServiceSpy.isErrorAction.mockReturnValue(true);
+      viewStateActionsServiceSpy.getErrorActionTypes.mockReturnValue(['loadData']);
 
       actions$.next(loadDataFailure);
     });
 
     it('should not map to error action', () => {
       const someAction: Action = { type: 'some action' };
-      const spy = jasmine.createSpy();
+      const spy = vi.fn();
 
       effects.error$.subscribe(spy);
 
-      viewStateActionsServiceSpy.isErrorAction.and.returnValue(false);
+      viewStateActionsServiceSpy.isErrorAction.mockReturnValue(false);
 
       actions$.next(someAction);
 

@@ -1,8 +1,20 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Injectable, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Actions, createEffect, EffectsModule, ofType } from '@ngrx/effects';
-import { Action, createActionGroup, emptyProps, props, Store, StoreModule } from '@ngrx/store';
-import { asyncScheduler, catchError, observeOn, of, Subject, switchMap, takeUntil, throwError } from 'rxjs';
+import { Actions, createEffect, ofType, provideEffects } from '@ngrx/effects';
+import { Action, createActionGroup, emptyProps, props, provideState, provideStore, Store } from '@ngrx/store';
+import {
+  asyncScheduler,
+  catchError,
+  firstValueFrom,
+  Observable,
+  observeOn,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+  throwError,
+} from 'rxjs';
 import { map, take, toArray } from 'rxjs/operators';
 
 import { ViewStateErrorProps } from '../models/view-state-props.model';
@@ -22,122 +34,136 @@ describe('ViewStateIntegration', () => {
 
   const { viewStatesFeature, selectActionViewStatus } = createViewStateFeature<string>();
 
-  const apiService = {
-    getData: () => of<string[]>([]),
-    addData: (data: string) => of(data),
+  let apiService: {
+    getData: () => Observable<string[]>;
+    addData: (data: string) => Observable<string>;
   };
 
   const DataActions = createActionGroup({
     source: 'Data',
     events: {
       loadData: emptyProps(),
-      loadDataSuccess: props<{ data: string[] }>(),
+      loadDataSuccess: props<{
+        data: string[];
+      }>(),
       loadDataFailure: props<ViewStateErrorProps>(),
 
-      addData: props<{ data: string }>(),
-      addDataSuccess: props<{ data: string }>(),
+      addData: props<{
+        data: string;
+      }>(),
+      addDataSuccess: props<{
+        data: string;
+      }>(),
       addDataFailure: props<ViewStateErrorProps>(),
 
       loadBooks: emptyProps(),
       loadBooksSuccess: emptyProps(),
-      loadBooksFailure: props<ViewStateErrorProps<{ message: string }>>(),
+      loadBooksFailure: props<
+        ViewStateErrorProps<{
+          message: string;
+        }>
+      >(),
 
       saveBook: emptyProps(),
       saveBookSuccess: emptyProps(),
     },
   });
 
-  @Injectable()
-  class DataEffects {
-    public getData$ = this.getData();
-    public addData$ = this.addData();
-
-    constructor(
-      private actions$: Actions,
-      private viewStateActionsService: ViewStateActionsService
-    ) {
-      this.viewStateActionsService.add([
-        {
-          startLoadingOn: DataActions.loadData,
-          resetOn: [DataActions.loadDataSuccess, DataActions.addData],
-          errorOn: [DataActions.loadDataFailure, DataActions.addDataFailure],
-        },
-        {
-          startLoadingOn: DataActions.addData,
-          resetOn: [DataActions.addDataSuccess],
-          errorOn: [DataActions.addDataFailure],
-        },
-        {
-          startLoadingOn: DataActions.loadBooks,
-          resetOn: [DataActions.loadBooksSuccess],
-          errorOn: [DataActions.loadBooksFailure],
-        },
-        {
-          startLoadingOn: DataActions.saveBook,
-          resetOn: [DataActions.saveBookSuccess],
-          errorOn: [],
-        },
-      ]);
-    }
-
-    private getData() {
-      return createEffect(() => {
-        return this.actions$.pipe(
-          ofType(DataActions.loadData),
-          switchMap(() => {
-            return apiService.getData().pipe(
-              map((data: string[]) => {
-                return DataActions.loadDataSuccess({
-                  data,
-                });
-              }),
-              catchError(() => {
-                return of(DataActions.loadDataFailure({ viewStateError: loadFailError }));
-              })
-            );
-          })
-        );
-      });
-    }
-
-    private addData() {
-      return createEffect(() => {
-        return this.actions$.pipe(
-          ofType(DataActions.addData),
-          switchMap(({ data }) => {
-            return apiService.addData(data).pipe(
-              map(() => {
-                return DataActions.addDataSuccess({
-                  data,
-                });
-              }),
-              catchError(() => {
-                return of(DataActions.addDataFailure({ viewStateError: addFailError }));
-              })
-            );
-          })
-        );
-      });
-    }
-  }
-
   beforeEach(() => {
+    apiService = {
+      getData: () => of<string[]>([]),
+      addData: (data: string) => of(data),
+    };
+
+    @Injectable()
+    class DataEffects {
+      public getData$ = this.getData();
+      public addData$ = this.addData();
+
+      constructor(
+        private actions$: Actions,
+        private viewStateActionsService: ViewStateActionsService
+      ) {
+        this.viewStateActionsService.add([
+          {
+            startLoadingOn: DataActions.loadData,
+            resetOn: [DataActions.loadDataSuccess, DataActions.addData],
+            errorOn: [DataActions.loadDataFailure, DataActions.addDataFailure],
+          },
+          {
+            startLoadingOn: DataActions.addData,
+            resetOn: [DataActions.addDataSuccess],
+            errorOn: [DataActions.addDataFailure],
+          },
+          {
+            startLoadingOn: DataActions.loadBooks,
+            resetOn: [DataActions.loadBooksSuccess],
+            errorOn: [DataActions.loadBooksFailure],
+          },
+          {
+            startLoadingOn: DataActions.saveBook,
+            resetOn: [DataActions.saveBookSuccess],
+            errorOn: [],
+          },
+        ]);
+      }
+
+      private getData() {
+        return createEffect(() => {
+          return this.actions$.pipe(
+            ofType(DataActions.loadData),
+            switchMap(() => {
+              return apiService.getData().pipe(
+                map((data: string[]) => {
+                  return DataActions.loadDataSuccess({
+                    data,
+                  });
+                }),
+                catchError(() => {
+                  return of(DataActions.loadDataFailure({ viewStateError: loadFailError }));
+                })
+              );
+            })
+          );
+        });
+      }
+
+      private addData() {
+        return createEffect(() => {
+          return this.actions$.pipe(
+            ofType(DataActions.addData),
+            switchMap(({ data }) => {
+              return apiService.addData(data).pipe(
+                map(() => {
+                  return DataActions.addDataSuccess({
+                    data,
+                  });
+                }),
+                catchError(() => {
+                  return of(DataActions.addDataFailure({ viewStateError: addFailError }));
+                })
+              );
+            })
+          );
+        });
+      }
+    }
+
     TestBed.configureTestingModule({
-      imports: [
-        StoreModule.forRoot({}),
-        EffectsModule.forRoot([]),
-        StoreModule.forFeature(viewStatesFeature),
-        EffectsModule.forFeature([ViewStateEffects, DataEffects]),
+      providers: [
+        provideStore(),
+        provideEffects(ViewStateEffects, DataEffects),
+        provideState(viewStatesFeature),
+        provideZonelessChangeDetection(),
       ],
-      providers: [provideZonelessChangeDetection()],
-    }).compileComponents();
+    });
 
     store = TestBed.inject(Store);
     actions$ = TestBed.inject(Actions);
   });
 
   describe('loadData action', () => {
-    it('should handle success data loading correctly', (done) => {
+    it('should handle success data loading correctly', async () => {
       const dataExpected: Action[] = [
         DataActions.loadData(),
         ViewStateActions.startLoading({ actionType: DataActions.loadData.type }),
@@ -147,15 +173,14 @@ describe('ViewStateIntegration', () => {
 
       actions$.pipe(take(dataExpected.length), toArray()).subscribe((result) => {
         expect(dataExpected).toEqual(result);
-        done();
       });
 
-      spyOn(apiService, 'getData').and.returnValue(of(['Hello', 'Word']));
+      vi.spyOn(apiService, 'getData').mockReturnValue(of(['Hello', 'Word']));
 
       store.dispatch(DataActions.loadData());
     });
 
-    it('should handle failure data loading correctly', (done) => {
+    it('should handle failure data loading correctly', async () => {
       const dataExpected: Action[] = [
         DataActions.loadData(),
         ViewStateActions.startLoading({ actionType: DataActions.loadData.type }),
@@ -165,17 +190,16 @@ describe('ViewStateIntegration', () => {
 
       actions$.pipe(take(dataExpected.length), toArray()).subscribe((result) => {
         expect(dataExpected).toEqual(result);
-        done();
       });
 
-      spyOn(apiService, 'getData').and.returnValue(throwError(() => new Error('Oops')));
+      vi.spyOn(apiService, 'getData').mockReturnValue(throwError(() => new Error('Oops')));
 
       store.dispatch(DataActions.loadData());
     });
   });
 
   describe('addData action', () => {
-    it('should handle success data adding correctly', (done) => {
+    it('should handle success data adding correctly', async () => {
       const dataExpected: Action[] = [
         DataActions.addData({ data: 'Hello' }),
         ViewStateActions.startLoading({ actionType: DataActions.addData.type }),
@@ -186,15 +210,14 @@ describe('ViewStateIntegration', () => {
 
       actions$.pipe(take(dataExpected.length), toArray()).subscribe((result) => {
         expect(dataExpected).toEqual(result);
-        done();
       });
 
-      spyOn(apiService, 'addData').and.returnValue(of('Hello'));
+      vi.spyOn(apiService, 'addData').mockReturnValue(of('Hello'));
 
       store.dispatch(DataActions.addData({ data: 'Hello' }));
     });
 
-    it('should handle failure data adding correctly', (done) => {
+    it('should handle failure data adding correctly', async () => {
       const dataExpected: Action[] = [
         DataActions.addData({ data: 'Hello Oops' }),
         ViewStateActions.startLoading({ actionType: DataActions.addData.type }),
@@ -210,17 +233,16 @@ describe('ViewStateIntegration', () => {
 
       actions$.pipe(take(dataExpected.length), toArray()).subscribe((result) => {
         expect(dataExpected).toEqual(result);
-        done();
       });
 
-      spyOn(apiService, 'addData').and.returnValue(throwError(() => new Error('Oops')));
+      vi.spyOn(apiService, 'addData').mockReturnValue(throwError(() => new Error('Oops')));
 
       store.dispatch(DataActions.addData({ data: 'Hello Oops' }));
     });
   });
 
-  describe('loadData action async and addData action', () => {
-    it('should reset loadData action after addData action', (done) => {
+  describe('[Async] loadData action and addData action', () => {
+    it('should reset loadData action after addData action', async () => {
       const dataExpected: Action[] = [
         DataActions.loadData(),
         ViewStateActions.startLoading({ actionType: DataActions.loadData.type }),
@@ -233,23 +255,23 @@ describe('ViewStateIntegration', () => {
         ViewStateActions.resetMany({ actionTypes: [DataActions.loadData.type] }),
       ];
 
-      actions$.pipe(take(dataExpected.length), toArray()).subscribe((result) => {
-        expect(dataExpected).toEqual(result);
-        done();
-      });
+      const actions = firstValueFrom(actions$.pipe(take(dataExpected.length), toArray()));
 
-      jasmine.clock().install();
-
-      spyOn(apiService, 'getData').and.returnValue(of(['Hello', 'World']).pipe(observeOn(asyncScheduler)));
+      vi.useFakeTimers();
+      vi.spyOn(apiService, 'getData').mockReturnValue(of(['Hello', 'World']).pipe(observeOn(asyncScheduler)));
 
       store.dispatch(DataActions.loadData());
       store.dispatch(DataActions.addData({ data: 'Add Hello' }));
+      vi.advanceTimersByTime(1);
 
-      jasmine.clock().tick(1);
-      jasmine.clock().uninstall();
+      const result = await actions;
+
+      expect(dataExpected).toEqual(result);
+
+      vi.useRealTimers();
     });
 
-    it('should error loadData action after addData action', (done) => {
+    it('should error loadData action after addData action', async () => {
       const dataExpected: Action[] = [
         DataActions.loadData(),
         ViewStateActions.startLoading({ actionType: DataActions.loadData.type }),
@@ -270,27 +292,23 @@ describe('ViewStateIntegration', () => {
         ViewStateActions.resetMany({ actionTypes: [DataActions.loadData.type] }),
       ];
 
-      actions$.pipe(take(dataExpected.length), toArray()).subscribe((result) => {
-        expect(dataExpected).toEqual(result);
-        done();
-      });
+      const actions = firstValueFrom(actions$.pipe(take(dataExpected.length), toArray()));
 
-      jasmine.clock().install();
+      vi.spyOn(apiService, 'getData').mockReturnValue(of(['Hello', 'World']).pipe(observeOn(asyncScheduler)));
 
-      spyOn(apiService, 'getData').and.returnValue(of(['Hello', 'World']).pipe(observeOn(asyncScheduler)));
-
-      spyOn(apiService, 'addData').and.returnValue(throwError(() => new Error('Oops')));
+      vi.spyOn(apiService, 'addData').mockReturnValue(throwError(() => new Error('Oops')));
 
       store.dispatch(DataActions.loadData());
       store.dispatch(DataActions.addData({ data: 'Add Hello Oops' }));
 
-      jasmine.clock().tick(1);
-      jasmine.clock().uninstall();
+      const result = await actions;
+
+      expect(dataExpected).toEqual(result);
     });
   });
 
-  describe('loadData action sync and addData action', () => {
-    it('should reset loadData action after addData action', () => {
+  describe('[SYNC] loadData action and addData action', () => {
+    it('should reset loadData action after addData action', async () => {
       const dataExpected: Action[] = [
         DataActions.loadData(),
         ViewStateActions.startLoading({ actionType: DataActions.loadData.type }),
@@ -303,17 +321,19 @@ describe('ViewStateIntegration', () => {
         ViewStateActions.resetMany({ actionTypes: [DataActions.addData.type] }),
       ];
 
-      actions$.pipe(take(dataExpected.length), toArray()).subscribe((result) => {
-        expect(dataExpected).toEqual(result);
-      });
+      const actions = firstValueFrom(actions$.pipe(take(dataExpected.length), toArray()));
 
-      spyOn(apiService, 'getData').and.returnValue(of(['Hello', 'World']));
+      vi.spyOn(apiService, 'getData').mockReturnValue(of(['Hello', 'World']));
 
       store.dispatch(DataActions.loadData());
       store.dispatch(DataActions.addData({ data: 'Add Hello' }));
+
+      const result = await actions;
+
+      expect(dataExpected).toEqual(result);
     });
 
-    it('should error loadData action after addData action', () => {
+    it('should error loadData action after addData action', async () => {
       const dataExpected: Action[] = [
         DataActions.loadData(),
         ViewStateActions.startLoading({ actionType: DataActions.loadData.type }),
@@ -334,15 +354,17 @@ describe('ViewStateIntegration', () => {
         }),
       ];
 
-      actions$.pipe(take(dataExpected.length), toArray()).subscribe((result) => {
-        expect(dataExpected).toEqual(result);
-      });
+      const actions = firstValueFrom(actions$.pipe(take(dataExpected.length), toArray()));
 
-      spyOn(apiService, 'getData').and.returnValue(of(['Hello', 'World']));
-      spyOn(apiService, 'addData').and.returnValue(throwError(() => new Error('Oops')));
+      vi.spyOn(apiService, 'getData').mockReturnValue(of(['Hello', 'World']));
+      vi.spyOn(apiService, 'addData').mockReturnValue(throwError(() => new Error('Oops')));
 
       store.dispatch(DataActions.loadData());
       store.dispatch(DataActions.addData({ data: 'Add Hello Oops' }));
+
+      const result = await actions;
+
+      expect(dataExpected).toEqual(result);
     });
   });
 

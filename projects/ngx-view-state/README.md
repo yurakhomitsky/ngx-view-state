@@ -1,4 +1,4 @@
-<h1>NgxViewState</h1>
+<h1>NgxViewState Angular v20+</h1>
 
 The `ngx-view-state` library is designed to simplify managing Loading/Success/Error states in Angular applications that use NgRx.
 

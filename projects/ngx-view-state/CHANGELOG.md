@@ -1,5 +1,11 @@
 ## Changelog
 
+## 5.1.0
+
+General changes:
+
+- Improve type inferring in `mapToViewModel` function when providing callback function and mapping to a different type from source
+
 ## 5.0.0
 
 General changes:
